@@ -3,8 +3,12 @@ provider "azurerm" {
   features {}
 }
 
+locals {
+  unique_name_stub = substr(module.naming.unique-seed, 0, 3)
+}
+
 module "naming" {
-  source = "git@github.com:Azure/terraform-azurerm-naming"
+  source = "git::https://github.com/Azure/terraform-azurerm-naming"
 }
 
 module "virtual_networking" {
@@ -13,7 +17,6 @@ module "virtual_networking" {
   use_existing_resource_group = false
   resource_group_location     = "uksouth"
   firewall_public_ip_sku      = "Standard"
-  prefix                      = substr(module.naming.unique-seed, 0, 6)
-  suffix                      = substr(module.naming.unique-seed, 0, 6)
+  suffix                      = [local.unique_name_stub]
 }
 
