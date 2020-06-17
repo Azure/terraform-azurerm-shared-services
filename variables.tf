@@ -31,31 +31,43 @@ variable "resource_group_location" {
 
 variable "log_retention_duration" {
   type        = number
-  description = "The duration in days to retain any logs created by the Analytics Platform. Note: Deleting the Analytics Platform in its entirety will delete any captured logs. This parameter allows you to control log retention within the lifecycle of the Analytics Platform."
+  description = "The duration in days to retain any logs created by the Shared Services. Note: Deleting the Shared Services in its entirety will delete any captured logs. This parameter allows you to control log retention within the lifecycle of the Shared Services."
   default     = "30"
 }
 
 variable "authorised_audit_client_ips" {
   type        = list(string)
-  description = "A list of IP addresses of the clients or endpoints athorised to directly access the Analytics Platforms audit logs."
+  description = "A list of IP addresses of the clients or endpoints athorised to directly access the Shared Servicess audit logs."
   default     = []
 }
 
 variable "authorised_audit_subnet_ids" {
   type        = list(string)
-  description = "A list of Azure Subnet ids of the subnets that are allowed to directly access the Analytics Platforms audit subnet."
+  description = "A list of Azure Subnet ids of the subnets that are allowed to directly access the Shared Servicess audit subnet."
+  default     = []
+}
+
+variable "authorised_persistent_data_client_ips" {
+  type        = list(string)
+  description = "A list of IP addresses of the clients or endpoints athorised to directly access the Shared Servicess persistent data store."
+  default     = []
+}
+
+variable "authorised_persistent_data_subnet_ids" {
+  type        = list(string)
+  description = "A list of Azure Subnet ids of the subnets that are allowed to directly access the Shared Servicess persistent data subnet."
   default     = []
 }
 
 variable "authorised_security_client_ips" {
   type        = list(string)
-  description = "A list of IP addresses of the clients or endpoints athorised to directly access the Analytics Platforms KeyVault."
+  description = "A list of IP addresses of the clients or endpoints athorised to directly access the Shared Servicess KeyVault."
   default     = []
 }
 
 variable "authorised_security_subnet_ids" {
   type        = list(string)
-  description = "A list of Azure Subnet ids of the subnets that are allowed to directly access the Analytics Platforms security subnet."
+  description = "A list of Azure Subnet ids of the subnets that are allowed to directly access the Shared Servicess security subnet."
   default     = []
 }
 

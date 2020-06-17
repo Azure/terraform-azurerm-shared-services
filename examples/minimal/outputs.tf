@@ -46,3 +46,10 @@ output "net_audit_subnet" {
   value = module.shared_services.net_audit_subnet
 }
 
+output "net_data_subnet" {
+  value = module.shared_services.net_data_subnet
+}
+
+output "data_storage_account" {
+  value = module.shared_services.data_storage_account
+}
