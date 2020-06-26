@@ -93,8 +93,8 @@ module "persistence_data" {
   #TODO: Work out what additional if any allowed ip ranges and permitted virtual network subnets there needs to be.
   allowed_ip_ranges                    = concat([], var.authorised_persistent_data_client_ips)
   permitted_virtual_network_subnet_ids = concat([module.virtual_network.data_subnet.id], var.authorised_persistent_data_subnet_ids)
-  enable_data_lake_filesystem          = false 
-  #data_lake_filesystem_name            = module.naming.storage_data_lake_gen2_filesystem.name_unique
+  enable_data_lake_filesystem          = false
+  data_lake_filesystem_name            = module.naming.storage_data_lake_gen2_filesystem.name_unique
   bypass_internal_network_rules        = true
 }
 
