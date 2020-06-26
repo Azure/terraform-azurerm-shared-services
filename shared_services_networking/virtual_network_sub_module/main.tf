@@ -19,6 +19,7 @@ resource "azurerm_subnet" "firewall_subnet" {
   resource_group_name  = var.resource_group.name
   virtual_network_name = azurerm_virtual_network.virtual_network.name
   address_prefixes     = [cidrsubnet(var.virtual_network_cidr, 3, 0)]
+  service_endpoints    = ["Microsoft.Storage"]
 }
 
 resource "azurerm_subnet" "secrets_subnet" {
@@ -26,7 +27,7 @@ resource "azurerm_subnet" "secrets_subnet" {
   resource_group_name                            = var.resource_group.name
   virtual_network_name                           = azurerm_virtual_network.virtual_network.name
   address_prefixes                               = [cidrsubnet(var.virtual_network_cidr, 3, 1)]
-  service_endpoints                              = ["Microsoft.KeyVault"]
+  service_endpoints                              = ["Microsoft.KeyVault", "Microsoft.Storage"]
   enforce_private_link_endpoint_network_policies = true
 }
 
@@ -35,7 +36,7 @@ resource "azurerm_subnet" "audit_subnet" {
   resource_group_name                            = var.resource_group.name
   virtual_network_name                           = azurerm_virtual_network.virtual_network.name
   address_prefixes                               = [cidrsubnet(var.virtual_network_cidr, 3, 2)]
-  service_endpoints                              = ["Microsoft.EventHub"]
+  service_endpoints                              = ["Microsoft.EventHub", "Microsoft.Storage"]
   enforce_private_link_endpoint_network_policies = true
 }
 

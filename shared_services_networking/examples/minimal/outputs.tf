@@ -23,7 +23,7 @@ output "virtual_network" {
   depends_on = [
     module.virtual_networking.firewall_subnet,
     module.virtual_networking.secrets_subnet,
-    module.virtual_networking.audit_subnet, 
+    module.virtual_networking.audit_subnet,
     module.virtual_networking.data_subnet
   ]
 }
