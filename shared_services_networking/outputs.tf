@@ -18,5 +18,8 @@ output "audit_subnet" {
   value = module.virtual_network.audit_subnet
 }
 
+output "data_subnet" {
+  value = module.virtual_network.data_subnet
+}
 
 

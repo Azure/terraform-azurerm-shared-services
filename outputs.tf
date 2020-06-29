@@ -45,3 +45,11 @@ output "net_secrets_subnet" {
 output "net_audit_subnet" {
   value = module.virtual_network.audit_subnet
 }
+
+output "net_data_subnet" {
+  value = module.virtual_network.data_subnet
+}
+
+output "data_storage_account" {
+  value = module.persistence_data.storage_account
+}
