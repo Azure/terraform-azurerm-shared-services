@@ -35,37 +35,37 @@ variable "log_retention_duration" {
   default     = "30"
 }
 
-variable "authorised_audit_client_ips" {
+variable "authorized_audit_client_ips" {
   type        = list(string)
   description = "A list of IP addresses of the clients or endpoints athorised to directly access the Shared Servicess audit logs."
   default     = []
 }
 
-variable "authorised_audit_subnet_ids" {
+variable "authorized_audit_subnet_ids" {
   type        = list(string)
   description = "A list of Azure Subnet ids of the subnets that are allowed to directly access the Shared Servicess audit subnet."
   default     = []
 }
 
-variable "authorised_persistent_data_client_ips" {
+variable "authorized_persistent_data_client_ips" {
   type        = list(string)
   description = "A list of IP addresses of the clients or endpoints athorised to directly access the Shared Servicess persistent data store."
   default     = []
 }
 
-variable "authorised_persistent_data_subnet_ids" {
+variable "authorized_persistent_data_subnet_ids" {
   type        = list(string)
   description = "A list of Azure Subnet ids of the subnets that are allowed to directly access the Shared Servicess persistent data subnet."
   default     = []
 }
 
-variable "authorised_security_client_ips" {
+variable "authorized_security_client_ips" {
   type        = list(string)
   description = "A list of IP addresses of the clients or endpoints athorised to directly access the Shared Servicess KeyVault."
   default     = []
 }
 
-variable "authorised_security_subnet_ids" {
+variable "authorized_security_subnet_ids" {
   type        = list(string)
   description = "A list of Azure Subnet ids of the subnets that are allowed to directly access the Shared Servicess security subnet."
   default     = []
