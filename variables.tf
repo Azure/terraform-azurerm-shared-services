@@ -37,7 +37,7 @@ variable "log_retention_duration" {
 
 variable "authorised_audit_client_ips" {
   type        = list(string)
-  description = "A list of IP addresses of the clients or endpoints athorised to directly access the Analytics Platforms audit logs."
+  description = "A list of IP addresses of the clients or endpoints authorised to directly access the Analytics Platforms audit logs."
   default     = []
 }
 
