@@ -49,7 +49,7 @@ variable "authorised_audit_subnet_ids" {
 
 variable "authorised_security_client_ips" {
   type        = list(string)
-  description = "A list of IP addresses of the clients or endpoints athorised to directly access the Analytics Platforms KeyVault."
+  description = "A list of IP addresses of the clients or endpoints authorised to directly access the Analytics Platforms KeyVault."
   default     = []
 }
 
@@ -60,7 +60,7 @@ variable "authorised_security_subnet_ids" {
 }
 
 variable "firewall_public_ip_sku" {
-  type        = string 
+  type        = string
   description = "The pricing and performance sku to create the Azure Firewalls public IP address to."
   default     = "Standard"
 }
