@@ -42,12 +42,24 @@ output "net_secrets_subnet" {
   value = module.virtual_network.secrets_subnet
 }
 
+output "net_secrets_network_security_group" {
+  value = module.virtual_network.secrets_subnet_network_security_group
+}
+
 output "net_audit_subnet" {
   value = module.virtual_network.audit_subnet
 }
 
+output "net_audit_network_security_group" {
+  value = module.virtual_network.audit_subnet_network_security_group
+}
+
 output "net_data_subnet" {
   value = module.virtual_network.data_subnet
+}
+
+output "net_data_network_security_group" {
+  value = module.virtual_network.data_subnet_network_security_group
 }
 
 output "data_storage_account" {
