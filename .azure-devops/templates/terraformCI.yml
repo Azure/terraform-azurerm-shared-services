@@ -11,10 +11,6 @@ jobs:
     endpoint: ${{ parameters.DOCKER_REGISTRY_SERVICE_CONNECTION }}
 
   steps:
-  - bash: 
-    workingDirectory: .
-    displayName: 'Check env'
-
   - bash: terraform init
     workingDirectory: .
     displayName: 'Terraform Init'
