@@ -49,5 +49,5 @@ stages:
             ARM_CLIENT_SECRET: $(AzCreds.AZ_SPN_KEY)
             ARM_SUBSCRIPTION_ID: $(AzCreds.AZ_SUB_ID)
             ARM_TENANT_ID: $(AzCreds.AZ_TENANT)
-            TF_VARS_resource_group_location: "uksouth"
+            TF_VAR_resource_group_location: "uksouth"
             TF_VAR_virtual_network_cidr: "10.0.0.0/24"
