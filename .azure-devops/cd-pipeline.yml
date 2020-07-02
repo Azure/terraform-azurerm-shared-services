@@ -41,7 +41,7 @@ stages:
                 AZ_SUB_ID=`az account show -o tsv | awk '{ print $3 }'`
                 echo '##vso[task.setvariable variable=AZ_SUB_ID;isOutput=true]'$AZ_SUB_ID
 
-        - bash: env && terraform apply
+        - bash: env && terraform init && terraform apply
           workingDirectory: $(Build.SourcesDirectory)/.
           displayName: 'CD Script'
           env:
