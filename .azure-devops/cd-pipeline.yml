@@ -25,7 +25,6 @@ stages:
       
       steps:
         - checkout: self
-        - checkout: https://github.com/Azure/terraform-azurerm-sec-shared-services.git
 
         - task: AzureCLI@2
           name: AzCreds
