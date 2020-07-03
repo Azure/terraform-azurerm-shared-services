@@ -23,6 +23,14 @@ module "virtual_network" {
   firewall_public_ip_sku      = var.firewall_public_ip_sku
 }
 
+module "virtual_networking_policy" {
+  source                     = "./policy_assignment"
+  target_resource_group_name = module.virtual_network.resource_group.name
+  log_retention_days         = var.log_retention_duration
+  log_analytics_workspace_id = module.audit_diagnostics_package.log_analytics_workspace.name
+  log_storage_account_name   = module.audit_diagnostics_package.storage_account.name
+}
+
 module "audit_diagnostics_package" {
   source                                     = "git::https://github.com/Azure/terraform-azurerm-sec-audit-diagnostics-package"
   storage_account_private_endpoint_subnet_id = module.virtual_network.audit_subnet.id
@@ -61,6 +69,14 @@ module "audit_diagnostics_package" {
   bypass_internal_network_rules        = true
 }
 
+module "audit_diagnostics_policy" {
+  source                     = "./policy_assignment"
+  target_resource_group_name = module.audit_diagnostics_package.resource_group.name
+  log_retention_days         = var.log_retention_duration
+  log_analytics_workspace_id = module.audit_diagnostics_package.log_analytics_workspace.name
+  log_storage_account_name   = module.audit_diagnostics_package.storage_account.name
+}
+
 module "security_package" {
   source                               = "git::https://github.com/Azure/terraform-azurerm-sec-security-package"
   use_existing_resource_group          = false
@@ -76,6 +92,14 @@ module "security_package" {
   enabled_for_deployment               = true
   enabled_for_disk_encryption          = true
   enabled_for_template_deployment      = true
+}
+
+module "security_policy" {
+  source                     = "./policy_assignment"
+  target_resource_group_name = module.security_package.resource_group.name
+  log_retention_days         = var.log_retention_duration
+  log_analytics_workspace_id = module.audit_diagnostics_package.log_analytics_workspace.name
+  log_storage_account_name   = module.audit_diagnostics_package.storage_account.name
 }
 
 resource "azurerm_resource_group" "persistent_data" {
@@ -108,6 +132,10 @@ module "persistent_data_managed_encryption_key" {
   suffix                 = local.suffix
 }
 
-/* module "log_definition" {
-  source = "git::https://github.com/Nepomuceno/terraform-azurerm-monitoring-policies.git"
-} */
+module "data_policy" {
+  source                     = "./policy_assignment"
+  target_resource_group_name = azurerm_resource_group.persistent_data.name
+  log_retention_days         = var.log_retention_duration
+  log_analytics_workspace_id = module.audit_diagnostics_package.log_analytics_workspace.name
+  log_storage_account_name   = module.audit_diagnostics_package.storage_account.name
+}
