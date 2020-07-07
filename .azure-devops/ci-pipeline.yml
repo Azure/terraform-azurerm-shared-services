@@ -12,4 +12,3 @@ stages:
       parameters:
         DOCKER_REGISTRY_SERVICE_CONNECTION: brightsideACR
         DOCKER_REGISTRY_URL: brdev.azurecr.io
-

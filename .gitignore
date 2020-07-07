@@ -20,3 +20,5 @@ terraform\.tfstate\.backup
 *.bak
 
 .vscode/*
+
+backend.config
