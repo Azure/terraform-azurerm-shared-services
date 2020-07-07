@@ -35,6 +35,3 @@ output "virtual_network" {
     azurerm_subnet.data_subnet
   ]
 }
-
-
-
