@@ -23,6 +23,14 @@ module "virtual_network" {
   firewall_public_ip_sku      = var.firewall_public_ip_sku
 }
 
+module "virtual_networking_policy" {
+  source                     = "./policy_assignment"
+  target_resource_group_name = module.virtual_network.resource_group.name
+  log_retention_days         = var.log_retention_duration
+  log_analytics_workspace_id = module.audit_diagnostics_package.log_analytics_workspace.name
+  log_storage_account_name   = module.audit_diagnostics_package.storage_account.name
+}
+
 module "audit_diagnostics_package" {
   source                                     = "git::https://github.com/Azure/terraform-azurerm-sec-audit-diagnostics-package"
   storage_account_private_endpoint_subnet_id = module.virtual_network.audit_subnet.id
@@ -56,9 +64,17 @@ module "audit_diagnostics_package" {
 
   #TODO: Work out what additional if any allowed ip ranges and permitted virtual network subnets there needs to be.
 
-  allowed_ip_ranges                    = concat([], var.authorised_audit_client_ips)
-  permitted_virtual_network_subnet_ids = concat([], var.authorised_audit_subnet_ids)
+  allowed_ip_ranges                    = concat([], var.authorized_audit_client_ips)
+  permitted_virtual_network_subnet_ids = concat([], var.authorized_audit_subnet_ids)
   bypass_internal_network_rules        = true
+}
+
+module "audit_diagnostics_policy" {
+  source                     = "./policy_assignment"
+  target_resource_group_name = module.audit_diagnostics_package.resource_group.name
+  log_retention_days         = var.log_retention_duration
+  log_analytics_workspace_id = module.audit_diagnostics_package.log_analytics_workspace.name
+  log_storage_account_name   = module.audit_diagnostics_package.storage_account.name
 }
 
 module "security_package" {
@@ -70,14 +86,56 @@ module "security_package" {
 
   #TODO: Work out what additional if any allowed ip ranges and permitted virtual network subnets there needs to be.
 
-  allowed_ip_ranges                    = concat([], var.authorised_security_client_ips)
-  permitted_virtual_network_subnet_ids = concat([], var.authorised_security_subnet_ids)
+  allowed_ip_ranges                    = concat([], var.authorized_security_client_ips)
+  permitted_virtual_network_subnet_ids = concat([], var.authorized_security_subnet_ids)
   sku_name                             = "standard"
   enabled_for_deployment               = true
   enabled_for_disk_encryption          = true
   enabled_for_template_deployment      = true
 }
 
-/* module "log_definition" {
-  source = "git::https://github.com/Nepomuceno/terraform-azurerm-monitoring-policies.git"
-} */
+module "security_policy" {
+  source                     = "./policy_assignment"
+  target_resource_group_name = module.security_package.resource_group.name
+  log_retention_days         = var.log_retention_duration
+  log_analytics_workspace_id = module.audit_diagnostics_package.log_analytics_workspace.name
+  log_storage_account_name   = module.audit_diagnostics_package.storage_account.name
+}
+
+resource "azurerm_resource_group" "persistent_data" {
+  name     = "${module.naming.resource_group.slug}-data-${join("-", local.suffix)}"
+  location = var.resource_group_location
+}
+
+module "persistence_data" {
+  source                           = "git::https://github.com/Azure/terraform-azurerm-sec-storage-account"
+  resource_group_name              = azurerm_resource_group.persistent_data.name
+  storage_account_name             = join("", ["persistent", module.naming.storage_account.name_unique])
+  storage_account_tier             = "Standard"
+  storage_account_replication_type = "LRS"
+
+  #TODO: Work out what additional if any allowed ip ranges and permitted virtual network subnets there needs to be.
+  allowed_ip_ranges                    = concat([], var.authorized_persistent_data_client_ips)
+  permitted_virtual_network_subnet_ids = concat([module.virtual_network.data_subnet.id], var.authorized_persistent_data_subnet_ids)
+  enable_data_lake_filesystem          = false
+  data_lake_filesystem_name            = module.naming.storage_data_lake_gen2_filesystem.name_unique
+  bypass_internal_network_rules        = true
+}
+
+#TODO: Check for key standard i.e key bit length and preferred crypto algorithm
+module "persistent_data_managed_encryption_key" {
+  source                 = "git::https://github.com/Azure/terraform-azurerm-sec-storage-managed-encryption-key"
+  resource_group_name    = module.security_package.resource_group.name
+  storage_account        = module.persistence_data.storage_account
+  key_vault_name         = module.security_package.key_vault.name
+  client_key_permissions = ["get", "delete", "create", "unwrapkey", "wrapkey", "update"]
+  suffix                 = local.suffix
+}
+
+module "data_policy" {
+  source                     = "./policy_assignment"
+  target_resource_group_name = azurerm_resource_group.persistent_data.name
+  log_retention_days         = var.log_retention_duration
+  log_analytics_workspace_id = module.audit_diagnostics_package.log_analytics_workspace.name
+  log_storage_account_name   = module.audit_diagnostics_package.storage_account.name
+}

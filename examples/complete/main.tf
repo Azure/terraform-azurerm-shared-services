@@ -32,17 +32,17 @@ resource "azurerm_subnet" "example_workload_subnet" {
 }
 
 module "shared_services" {
-  source                          = "../../"
-  virtual_network_cidr            = "10.0.0.0/20"
-  use_existing_resource_group     = false
-  resource_group_location         = "uksouth"
-  suffix                          = [local.unique_name_stub]
-  log_retention_duration          = 30
-  authorised_audit_client_ips     = [data.external.test_client_ip.result.ip]
-  authorised_audit_subnet_ids     = [azurerm_subnet.example_workload_subnet.id]
-  authorised_security_client_ips  = [data.external.test_client_ip.result.ip]
-  authorised_security_subnet_ids  = [azurerm_subnet.example_workload_subnet.id]
-  firewall_public_ip_sku          = "Standard"
+  source                         = "../../"
+  virtual_network_cidr           = "10.0.0.0/20"
+  use_existing_resource_group    = false
+  resource_group_location        = "uksouth"
+  suffix                         = [local.unique_name_stub]
+  log_retention_duration         = 30
+  authorized_audit_client_ips    = [data.external.test_client_ip.result.ip]
+  authorized_audit_subnet_ids    = [azurerm_subnet.example_workload_subnet.id]
+  authorized_security_client_ips = [data.external.test_client_ip.result.ip]
+  authorized_security_subnet_ids = [azurerm_subnet.example_workload_subnet.id]
+  firewall_public_ip_sku         = "Standard"
 }
 
 
