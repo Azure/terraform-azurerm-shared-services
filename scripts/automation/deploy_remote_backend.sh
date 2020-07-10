@@ -15,6 +15,11 @@
 #
 ####################################################################################
 
+set -e
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+$DIR/terraform-checkvars.sh
+
 function add_backend_to_terraform_config 
 {
   # Write azurerm backend to terraform file
@@ -46,8 +51,7 @@ backend_exists=$(az storage account list --query "length([?name=='$TF_VAR_enviro
 
 if [ $backend_exists = "0" ]; then
   echo "INFO: Creating new backend: $TF_VAR_environment_id"
-  cd terraform-azurerm-remote-state
-  terraform init && terraform plan && terraform apply -auto-approve
+  pushd terraform-azurerm-remote-state && terraform init && terraform plan && terraform apply -auto-approve && popd
 else
   echo "INFO: Backend appears to already exist for $TF_VAR_environment_id"
 fi
