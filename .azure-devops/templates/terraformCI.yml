@@ -28,7 +28,7 @@ jobs:
           echo '##vso[task.setvariable variable=AZ_SUB_ID;isOutput=true]'$AZ_SUB_ID
 
 
-  - bash: ./scripts/automations/shared_services-ci.sh
+  - bash: ./scripts/automation/shared_services-ci.sh
     workingDirectory: .
     displayName: 'Terraform CI'
     env: 
