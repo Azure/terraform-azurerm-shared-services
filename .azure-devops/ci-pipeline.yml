@@ -4,11 +4,11 @@
 stages:
   - stage: CI
     jobs:
-    - template: templates/terraformCI.yml
-      parameters:
-        DOCKER_IMAGE: brightside-dev:latest
-        DOCKER_REGISTRY_SERVICE_CONNECTION: brightsideACR
     - template: templates/dockerCI.yml
       parameters:
         DOCKER_REGISTRY_SERVICE_CONNECTION: brightsideACR
         DOCKER_REGISTRY_URL: brdev.azurecr.io
+    - template: templates/terraformCI.yml
+      parameters:
+        DOCKER_IMAGE: brightside-dev:latest
+        DOCKER_REGISTRY_SERVICE_CONNECTION: brightsideACR

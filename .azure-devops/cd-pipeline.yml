@@ -41,8 +41,8 @@ stages:
                 AZ_SUB_ID=`az account show -o tsv | awk '{ print $3 }'`
                 echo '##vso[task.setvariable variable=AZ_SUB_ID;isOutput=true]'$AZ_SUB_ID
 
-        - bash: ./deploy_remote_backend.sh 
-          workingDirectory: ./scripts/automation/
+        - bash: ./scripts/automation/deploy_remote_backend.sh 
+          workingDirectory: .
           displayName: 'Deploy TF Backend'
           env:
             ARM_CLIENT_ID: $(AzCreds.AZ_SPN)
@@ -51,7 +51,7 @@ stages:
             ARM_TENANT_ID: $(AzCreds.AZ_TENANT)
             TF_VAR_environment_id: $(ENVIRONMENT_ID)
 
-        - bash: env && terraform init && terraform plan && terraform apply
+        - bash: env && ./scripts/automation/deploy_shared_services.sh
           workingDirectory: .
           displayName: 'Deploy Shared Service instance'
           env:
@@ -60,4 +60,5 @@ stages:
             ARM_SUBSCRIPTION_ID: $(AzCreds.AZ_SUB_ID)
             ARM_TENANT_ID: $(AzCreds.AZ_TENANT)
             TF_VAR_environment_id: $(ENVIRONMENT_ID)
-            TF_VAR_
+            TF_VAR_location: $(LOCATION)
+            TF_VAR_virtual_network_cidr: $(LOCATION)
