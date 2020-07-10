@@ -12,3 +12,4 @@ stages:
       parameters:
         DOCKER_IMAGE: brightside-dev:latest
         DOCKER_REGISTRY_SERVICE_CONNECTION: brightsideACR
+      
