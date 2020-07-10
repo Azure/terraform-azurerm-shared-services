@@ -23,7 +23,7 @@ jobs:
     workingDirectory: .
     displayName: 'Terraform Validate'
   
-  - bash: ./scripts/automation/terraform-checkvars-ci.sh && terraform plan
+  - bash: ./scripts/automation/terraform-checkvars.sh && terraform plan
     workingDirectory: .
     displayName: 'Terraform Plan'
     env: 
