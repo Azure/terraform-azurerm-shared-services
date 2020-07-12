@@ -63,5 +63,5 @@ output "net_data_network_security_group" {
 }
 
 output "data_storage_account" {
-  value = module.persistence_data.storage_account
+  value = module.persistent_data.storage_account
 }
