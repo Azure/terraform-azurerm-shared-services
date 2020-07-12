@@ -7,22 +7,11 @@ module "naming" {
   suffix = var.suffix
 }
 
-resource "azurerm_network_ddos_protection_plan" "ss_ddos_protection_plan" {
-  name                = module.naming.network_ddos_protection_plan.name
-  location            = var.resource_group.location
-  resource_group_name = var.resource_group.name
-}
-
 resource "azurerm_virtual_network" "virtual_network" {
   name                = module.naming.virtual_network.name
   location            = var.resource_group.location
   resource_group_name = var.resource_group.name
   address_space       = [var.virtual_network_cidr]
-
-  ddos_protection_plan {
-    id     = azurerm_network_ddos_protection_plan.ss_ddos_protection_plan.id
-    enable = true
-  }
 }
 
 resource "azurerm_subnet" "firewall_subnet" {
