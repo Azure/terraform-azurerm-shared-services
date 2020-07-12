@@ -32,6 +32,7 @@ module "virtual_network_diagnostic_settings" {
   shared_service_data_nsg                 = module.virtual_network.data_subnet_network_security_group
   shared_service_audit_nsg                = module.virtual_network.audit_subnet_network_security_group
   shared_service_secrets_nsg              = module.virtual_network.secrets_subnet_network_security_group
+  shared_service_firewall                 = module.virtual_network.firewall
   shared_service_diag_storage             = module.audit_diagnostics_package.storage_account
   shared_service_diag_log_analytics       = module.audit_diagnostics_package.log_analytics_workspace
   shared_service_log_retention_duration   = var.log_retention_duration

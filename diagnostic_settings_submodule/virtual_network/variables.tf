@@ -22,6 +22,10 @@ variable "shared_service_secrets_nsg" {
   type = any
 }
 
+variable "shared_service_firewall" {
+  type = any
+}
+
 variable "shared_service_diag_storage" {
   type = any
 }

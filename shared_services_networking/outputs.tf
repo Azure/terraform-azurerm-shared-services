@@ -6,6 +6,10 @@ output "virtual_network" {
   value = module.virtual_network.virtual_network
 }
 
+output "firewall" {
+  value = module.virtual_network.firewall
+}
+
 output "firewall_subnet" {
   value = module.virtual_network.firewall_subnet
 }
