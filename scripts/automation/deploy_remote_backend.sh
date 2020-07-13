@@ -15,7 +15,7 @@
 #
 ####################################################################################
 
-set -e
+set -ex
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 $DIR/terraform-checkvars.sh
@@ -47,6 +47,8 @@ function validate_environment_id
 validate_environment_id
 add_backend_to_terraform_config
 
+echo "Log in as service principal.."
+az login --service-principal --username $ARM_CLIENT_ID  --password $ARM_CLIENT_SECRET --tenant $ARM_TENANT_ID
 backend_exists=$(az storage account list --query "length([?name=='$TF_VAR_environment_id'].name)")
 
 if [ $backend_exists = "0" ]; then
