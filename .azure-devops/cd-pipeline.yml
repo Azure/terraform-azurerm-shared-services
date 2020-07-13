@@ -15,10 +15,8 @@ variables:
 stages:
   - stage: CD
     jobs:
-
     - job: CD
-      pool:
-        vmImage: 'ubuntu-latest'
+      pool: $(BUILD_AGENT_POOL_NAME)
       container:
         image: $(DOCKER_IMAGE)
         endpoint: brightsideACR
