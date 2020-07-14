@@ -17,6 +17,8 @@ stages:
     jobs:
     - job: CD
       pool: $(BUILD_AGENT_POOL_NAME)
+      workspace:  
+        clean: all
       container:
         image: $(DOCKER_IMAGE)
         endpoint: brightsideACR
