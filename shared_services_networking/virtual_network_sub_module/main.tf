@@ -20,7 +20,7 @@ resource "azurerm_subnet" "firewall_subnet" {
   virtual_network_name = azurerm_virtual_network.virtual_network.name
   address_prefixes     = [cidrsubnet(var.virtual_network_cidr, 3, 0)]
   service_endpoints    = ["Microsoft.Storage"]
-  depends_on = [azurerm_virtual_network.virtual_network]
+  depends_on           = [azurerm_virtual_network.virtual_network]
 }
 
 resource "azurerm_subnet" "secrets_subnet" {
@@ -30,7 +30,7 @@ resource "azurerm_subnet" "secrets_subnet" {
   address_prefixes                               = [cidrsubnet(var.virtual_network_cidr, 3, 1)]
   service_endpoints                              = ["Microsoft.KeyVault", "Microsoft.Storage"]
   enforce_private_link_endpoint_network_policies = true
-  depends_on = [azurerm_subnet.firewall_subnet]
+  depends_on                                     = [azurerm_subnet.firewall_subnet]
 }
 
 resource "azurerm_subnet" "audit_subnet" {
@@ -40,7 +40,7 @@ resource "azurerm_subnet" "audit_subnet" {
   address_prefixes                               = [cidrsubnet(var.virtual_network_cidr, 3, 2)]
   service_endpoints                              = ["Microsoft.EventHub", "Microsoft.Storage"]
   enforce_private_link_endpoint_network_policies = true
-  depends_on = [azurerm_subnet.secrets_subnet]
+  depends_on                                     = [azurerm_subnet.secrets_subnet]
 }
 
 resource "azurerm_subnet" "data_subnet" {
@@ -50,7 +50,7 @@ resource "azurerm_subnet" "data_subnet" {
   address_prefixes                               = [cidrsubnet(var.virtual_network_cidr, 3, 3)]
   service_endpoints                              = ["Microsoft.Storage"]
   enforce_private_link_endpoint_network_policies = true
-  depends_on = [azurerm_subnet.audit_subnet]
+  depends_on                                     = [azurerm_subnet.audit_subnet]
 }
 
 module "secrets_nsg" {

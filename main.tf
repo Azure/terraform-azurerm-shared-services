@@ -4,8 +4,9 @@ provider "azurerm" {
 }
 
 locals {
-  suffix                  = concat(["ss"], var.suffix)
-  resource_group_location = var.resource_group_location
+  suffix                         = concat(["ss"], var.suffix)
+  resource_group_location        = var.resource_group_location
+  network_watcher_resource_group = "NetworkWatcherRG"
 }
 
 module "naming" {
@@ -21,6 +22,20 @@ module "virtual_network" {
   resource_group_name         = var.resource_group_name
   resource_group_location     = local.resource_group_location
   firewall_public_ip_sku      = var.firewall_public_ip_sku
+}
+
+module "virtual_network_diagnostic_settings" {
+  source                                  = "./diagnostic_settings_submodule/virtual_network"
+  shared_service_virtual_network          = module.virtual_network.virtual_network
+  shared_service_network_watcher_location = local.resource_group_location
+  shared_service_subnet_nsg_ids           = module.virtual_network.nsg_ids
+  shared_service_data_nsg                 = module.virtual_network.data_subnet_network_security_group
+  shared_service_audit_nsg                = module.virtual_network.audit_subnet_network_security_group
+  shared_service_secrets_nsg              = module.virtual_network.secrets_subnet_network_security_group
+  shared_service_firewall                 = module.virtual_network.firewall
+  shared_service_diag_storage             = module.audit_diagnostics_package.storage_account
+  shared_service_diag_log_analytics       = module.audit_diagnostics_package.log_analytics_workspace
+  shared_service_log_retention_duration   = var.log_retention_duration
 }
 
 module "virtual_networking_policy" {
@@ -69,6 +84,15 @@ module "audit_diagnostics_package" {
   bypass_internal_network_rules        = true
 }
 
+module "audit_diagnostic_settings" {
+  source                                = "./diagnostic_settings_submodule/audit_diagnostics"
+  shared_service_eventhub_namespace     = module.audit_diagnostics_package.event_hub_namespace
+  shared_service_automation_account     = module.audit_diagnostics_package.automation_account
+  shared_service_diag_storage           = module.audit_diagnostics_package.storage_account
+  shared_service_diag_log_analytics     = module.audit_diagnostics_package.log_analytics_workspace
+  shared_service_log_retention_duration = var.log_retention_duration
+}
+
 module "audit_diagnostics_policy" {
   source                     = "./policy_assignment"
   target_resource_group_name = module.audit_diagnostics_package.resource_group.name
@@ -94,6 +118,14 @@ module "security_package" {
   enabled_for_template_deployment      = true
 }
 
+module "security_diagnostic_settings" {
+  source                                = "./diagnostic_settings_submodule/security"
+  shared_service_key_vault              = module.security_package.key_vault
+  shared_service_diag_storage           = module.audit_diagnostics_package.storage_account
+  shared_service_diag_log_analytics     = module.audit_diagnostics_package.log_analytics_workspace
+  shared_service_log_retention_duration = var.log_retention_duration
+}
+
 module "security_policy" {
   source                     = "./policy_assignment"
   target_resource_group_name = module.security_package.resource_group.name
@@ -107,7 +139,7 @@ resource "azurerm_resource_group" "persistent_data" {
   location = var.resource_group_location
 }
 
-module "persistence_data" {
+module "persistent_data" {
   source                           = "git::https://github.com/Azure/terraform-azurerm-sec-storage-account"
   resource_group_name              = azurerm_resource_group.persistent_data.name
   storage_account_name             = join("", ["persistent", module.naming.storage_account.name_unique])
@@ -126,7 +158,7 @@ module "persistence_data" {
 module "persistent_data_managed_encryption_key" {
   source                 = "git::https://github.com/Azure/terraform-azurerm-sec-storage-managed-encryption-key"
   resource_group_name    = module.security_package.resource_group.name
-  storage_account        = module.persistence_data.storage_account
+  storage_account        = module.persistent_data.storage_account
   key_vault_name         = module.security_package.key_vault.name
   client_key_permissions = ["get", "delete", "create", "unwrapkey", "wrapkey", "update"]
   suffix                 = local.suffix
