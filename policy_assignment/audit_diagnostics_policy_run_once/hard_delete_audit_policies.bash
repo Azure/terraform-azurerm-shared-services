@@ -10,5 +10,5 @@ az policy set-definition delete --name "Auto Diagnostics Policy Initiative"
 #WARNING this will delete all custom policies assigned to the subscription
 #az policy definition list | jq -r 'map(select(.policyType=="Custom")) | .[] | .name' | while read line; do az policy definition delete -n $line ; done 
 
-az policy definition list | jq -r 'map(select(.name|startswith("log-microsoft"))) | .[] | .name' | while read line; do az policy definition delete -n $line ; done 
+az policy definition list --query "[?contains(name, 'log-microsoft_')].name" | while read line; do az policy definition delete -n $line ; done 
 
