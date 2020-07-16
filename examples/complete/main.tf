@@ -39,6 +39,7 @@ module "shared_services" {
   suffix                         = [local.unique_name_stub]
   log_retention_duration         = 30
   authorized_audit_client_ips    = [data.external.test_client_ip.result.ip]
+  authorized_persistent_data_client_ips = [data.external.test_client_ip.result.ip]
   authorized_audit_subnet_ids    = [azurerm_subnet.example_workload_subnet.id]
   authorized_security_client_ips = [data.external.test_client_ip.result.ip]
   authorized_security_subnet_ids = [azurerm_subnet.example_workload_subnet.id]
