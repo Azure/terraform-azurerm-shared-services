@@ -17,6 +17,16 @@ variable "location" {
   description = "The Azure region into which these resources will be deployed e.g. 'uksouth'."
 }
 
+variable "devops_org" {
+  type        = string
+  description = "The name of the devops org into which the build agent will be installed e.g. https://dev.azure.com/myDevOrg"
+}
+
+variable "pat_token" {
+  type        = string
+  description = "PAT token with permission to manage build agent pools. Create this token via https://dev.azure.com/DevCrew-UK-2/_usersSettings/tokens, needs 'Agent Pools (Read & Manage) permissions"
+}
+
 ##########################
 # Backend Storage Account
 ##########################
@@ -95,9 +105,9 @@ resource "azurerm_virtual_machine" "build" {
   }
 
   os_profile {
-    computer_name  = "buildagent"
-    admin_username = "buildadmin"
-    admin_password = "changeme"
+    computer_name   = "${var.environment_id}-build-agent"
+    admin_username  = "buildadmin"
+    admin_password  = "changeme"
   }
 
   os_profile_linux_config {
@@ -119,7 +129,9 @@ resource "azurerm_virtual_machine_extension" "build" {
   settings = <<SCRIPT
     {
         "script": "${base64encode(templatefile("agent_installer.sh", {
-          message="${var.environment_id}"
+          ORG="${var.devops_org}",
+          PAT="${var.pat_token}",
+          NAME=azurerm_virtual_machine.build.name
         }))}"
     }
 SCRIPT
