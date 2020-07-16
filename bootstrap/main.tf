@@ -107,11 +107,11 @@ resource "azurerm_virtual_machine" "build" {
   os_profile {
     computer_name   = "${var.environment_id}-build-agent"
     admin_username  = "buildadmin"
-    admin_password  = "changeme"
+    admin_password  = "Kubla1Khan;"
   }
 
   os_profile_linux_config {
-    disable_password_authentication = true
+    disable_password_authentication = false
   }
 }
 
