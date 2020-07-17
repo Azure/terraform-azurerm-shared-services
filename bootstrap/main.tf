@@ -128,7 +128,7 @@ resource "azurerm_virtual_machine_extension" "build" {
 
   settings = <<SCRIPT
     {
-        "script": "${base64encode(templatefile("agent_installer.sh", {
+        "script": "${base64encode(templatefile("${path.module}/agent_installer.sh", {
           ORG="${var.devops_org}",
           PAT="${var.pat_token}",
           NAME=azurerm_virtual_machine.build.name
