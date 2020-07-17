@@ -1,6 +1,3 @@
-# TODO: Service connection not currently set via a variable due to this
-# unresolved issue: https://github.com/microsoft/azure-pipelines-agent/issues/1307#issuecomment-403194600
-
 stages:
   - stage: CI
     jobs:
