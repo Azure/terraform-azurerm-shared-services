@@ -14,6 +14,14 @@ module "naming" {
   suffix = local.suffix
 }
 
+module "backend" {
+  source          = "./bootstrap"
+  pat_token       = var.pat_token
+  environment_id  = join("", var.suffix)
+  devops_org      = var.devops_org
+  location        = var.resource_group_location
+}
+
 module "virtual_network" {
   source                      = "./shared_services_networking"
   virtual_network_cidr        = var.virtual_network_cidr

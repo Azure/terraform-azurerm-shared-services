@@ -1,4 +1,15 @@
 #Required Variables
+
+variable "devops_org" {
+  type        = string
+  description = "The name of the devops org into which the build agent will be installed e.g. https://dev.azure.com/myDevOrg"
+}
+
+variable "pat_token" {
+  type        = string
+  description = "PAT token with permission to manage build agent pools. Create this token via https://dev.azure.com/DevCrew-UK-2/_usersSettings/tokens, needs 'Agent Pools (Read & Manage) permissions"
+}
+
 variable "virtual_network_cidr" {
   type        = string
   description = "A string CIDR address space for the Shared Services virtual network to be deployed to."
