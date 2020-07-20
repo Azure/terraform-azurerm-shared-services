@@ -27,5 +27,5 @@ jobs:
     env:
       DOCKER_REGISTRY_URL: ${{ parameters.DOCKER_REGISTRY_URL }}
       DOCKERFILE_PATH: ".devcontainer/Dockerfile"
-      DOCKER_IMAGE_NAME: "brightside-dev"
+      DOCKER_IMAGE_NAME: "devcontainer"
       DOCKER_IMAGE_TAG: $(Version.VER)

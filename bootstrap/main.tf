@@ -22,6 +22,11 @@ variable "devops_org" {
   description = "The name of the devops org into which the build agent will be installed e.g. https://dev.azure.com/myDevOrg"
 }
 
+variable "devops_project" {
+  type        = string
+  description = "The name of the pre-existing ADO project to which the build agent will be attached"
+}
+
 variable "pat_token" {
   type        = string
   description = "PAT token with permission to manage build agent pools. Create this token via https://dev.azure.com/DevCrew-UK-2/_usersSettings/tokens, needs 'Agent Pools (Read & Manage) permissions"
@@ -154,6 +159,27 @@ resource "azurerm_container_registry" "build" {
   admin_enabled            = false
 }
 
+provider "azuredevops" {
+  version               = ">= 0.0.1"
+  org_service_url       = var.devops_org
+  personal_access_token = var.pat_token
+}
+
+data "azuredevops_project" "devops_project" {
+  project_name          = var.devops_project
+}
+
+resource "azuredevops_serviceendpoint_dockerregistry" "build" {
+    project_id            = data.azuredevops_project.devops_project.id
+    service_endpoint_name = "acr_connection"
+    docker_registry       = azurerm_container_registry.build.login_server
+    registry_type         = "Others"
+}
+
 ###############################
 # Outputs
 ###############################
+
+output "acr_name" {
+  value = azurerm_container_registry.build.name
+}

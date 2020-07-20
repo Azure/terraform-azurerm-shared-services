@@ -6,10 +6,6 @@ resources:
       branches:
         - master
 
-variables:
-  DOCKER_IMAGE: brightside-dev:latest
-  DOCKER_REGISTRY_URL: brdev.azurecr.io
-
 stages:
   - stage: CD
     jobs:
@@ -19,8 +15,8 @@ stages:
       workspace:  
         clean: all
       container:
-        image: $(DOCKER_IMAGE)
-        endpoint: brightsideACR
+        image: devcontainer:latest
+        endpoint: acr_connection
       
       steps:
         - checkout: self
