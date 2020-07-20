@@ -143,5 +143,17 @@ SCRIPT
 }
 
 ###############################
-#
+# ACR
+###############################
+
+resource "azurerm_container_registry" "build" {
+  name                     = "ACR${var.environment_id}"
+  resource_group_name      = azurerm_resource_group.backend.name
+  location                 = azurerm_resource_group.backend.location
+  sku                      = "Basic"
+  admin_enabled            = false
+}
+
+###############################
+# Outputs
 ###############################
