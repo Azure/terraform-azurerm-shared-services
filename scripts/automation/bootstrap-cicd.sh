@@ -46,6 +46,13 @@ echo "container_name=\"$CT_NAME\"" >> $BACKEND_CONFIG
 echo "key=\"terraform.tfstate\"" >> $BACKEND_CONFIG
 echo "access_key=$SA_KEY" >> $BACKEND_CONFIG
 
-# Init with remote backend
-terraform state mv *
+# Move bootstrap to the module it becomes in root and then re-init with remote backend
+
+resources=$(terraform state list)
+
+for resource in $resources
+do
+  terraform state mv $resource module.backend.$resource
+done
+
 terraform init -backend-config=./backend.config -force-copy
