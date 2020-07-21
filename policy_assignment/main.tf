@@ -11,7 +11,7 @@ locals {
 
 resource "azurerm_policy_assignment" "cis_assignment" {
   name                 = local.cis_policy_display_name
-  scope                = data.azurerm_resource_group.target_resource_group.id
+  scope                = var.target_resource_group.id
   policy_definition_id = data.azurerm_policy_set_definition.cis_set_definition.id
   description          = data.azurerm_policy_set_definition.cis_set_definition.description
   display_name         = local.cis_policy_display_name
@@ -19,11 +19,11 @@ resource "azurerm_policy_assignment" "cis_assignment" {
 
 resource "azurerm_policy_assignment" "official_assignment" {
   name                 = local.official_policy_display_name
-  scope                = data.azurerm_resource_group.target_resource_group.id
+  scope                = var.target_resource_group.id
   policy_definition_id = data.azurerm_policy_set_definition.official_set_definition.id
   description          = data.azurerm_policy_set_definition.official_set_definition.description
   display_name         = local.official_policy_display_name
-  location             = data.azurerm_resource_group.target_resource_group.location
+  location             = var.target_resource_group.location
 
   identity {
     type = "SystemAssigned"
@@ -32,11 +32,11 @@ resource "azurerm_policy_assignment" "official_assignment" {
 
 resource "azurerm_policy_assignment" "diagnostics_assignment" {
   name                 = local.auto_diagnostics_display_name
-  scope                = data.azurerm_resource_group.target_resource_group.id
+  scope                = var.target_resource_group.id
   policy_definition_id = data.azurerm_policy_set_definition.auto_diagnostics_set_definition.id
   description          = data.azurerm_policy_set_definition.auto_diagnostics_set_definition.description
   display_name         = local.auto_diagnostics_display_name
-  location             = data.azurerm_resource_group.target_resource_group.location
+  location             = var.target_resource_group.location
 
   identity {
     type = "SystemAssigned"
@@ -54,7 +54,7 @@ resource "azurerm_policy_assignment" "diagnostics_assignment" {
             "value" : "${var.log_storage_account_name}"
         },
         "resourceLocation": {
-            "value" : "${data.azurerm_resource_group.target_resource_group.location}"
+            "value" : "${var.target_resource_group.location}"
         }
     }
 PARAMETERS

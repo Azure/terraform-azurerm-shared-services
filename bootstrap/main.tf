@@ -29,7 +29,7 @@ variable "devops_project" {
 
 variable "pat_token" {
   type        = string
-  description = "PAT token with permission to manage build agent pools. Create this token via https://dev.azure.com/DevCrew-UK-2/_usersSettings/tokens, needs 'Agent Pools (Read & Manage) permissions"
+  description = "PAT token with 'Owner' level access. Create this token via https://dev.azure.com/<ORG>/_usersSettings/tokens"
 }
 
 ##########################
@@ -70,7 +70,7 @@ resource "azurerm_subnet" "internal" {
   name                 = "internal"
   resource_group_name  = azurerm_resource_group.backend.name
   virtual_network_name = azurerm_virtual_network.build.name
-  address_prefix       = "10.0.2.0/24"
+  address_prefixes     = ["10.0.2.0/24"]
 }
 
 resource "azurerm_network_interface" "build" {
@@ -180,6 +180,6 @@ resource "azuredevops_serviceendpoint_dockerregistry" "build" {
 # Outputs
 ###############################
 
-output "acr_name" {
-  value = azurerm_container_registry.build.name
+output "build_subnet_id" {
+  value = azurerm_virtual_network.build.id
 }

@@ -9,9 +9,9 @@ module "naming" {
 
 resource "azurerm_virtual_network" "virtual_network" {
   name                = module.naming.virtual_network.name
-  location            = var.resource_group.location
-  resource_group_name = var.resource_group.name
   address_space       = [var.virtual_network_cidr]
+  resource_group_name = var.resource_group.name
+  location            = var.resource_group.location
 }
 
 resource "azurerm_subnet" "firewall_subnet" {
@@ -56,8 +56,8 @@ resource "azurerm_subnet" "data_subnet" {
 module "secrets_nsg" {
   source                          = "git::https://github.com/Azure/terraform-azurerm-sec-network-security-group"
   resource_group_name             = var.resource_group.name
-  associated_virtual_network_name = azurerm_virtual_network.virtual_network.name
-  associated_subnet_name          = azurerm_subnet.secrets_subnet.name
+  resource_group_location         = var.resource_group.location
+  associated_subnet_id            = azurerm_subnet.secrets_subnet.id
   suffix                          = concat(var.suffix, ["sec"])
   security_rule_names             = []
   module_depends_on               = [azurerm_subnet.data_subnet]
@@ -66,8 +66,8 @@ module "secrets_nsg" {
 module "audit_nsg" {
   source                          = "git::https://github.com/Azure/terraform-azurerm-sec-network-security-group"
   resource_group_name             = var.resource_group.name
-  associated_virtual_network_name = azurerm_virtual_network.virtual_network.name
-  associated_subnet_name          = azurerm_subnet.audit_subnet.name
+  resource_group_location         = var.resource_group.location
+  associated_subnet_id            = azurerm_subnet.audit_subnet.id
   suffix                          = concat(var.suffix, ["aud"])
   security_rule_names             = []
   module_depends_on               = [module.secrets_nsg]
@@ -76,8 +76,8 @@ module "audit_nsg" {
 module "data_nsg" {
   source                          = "git::https://github.com/Azure/terraform-azurerm-sec-network-security-group"
   resource_group_name             = var.resource_group.name
-  associated_virtual_network_name = azurerm_virtual_network.virtual_network.name
-  associated_subnet_name          = azurerm_subnet.data_subnet.name
+  resource_group_location         = var.resource_group.location
+  associated_subnet_id            = azurerm_subnet.data_subnet.id
   suffix                          = concat(var.suffix, ["dat"])
   security_rule_names             = []
   module_depends_on               = [module.audit_nsg]

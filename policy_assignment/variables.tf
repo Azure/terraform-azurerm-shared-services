@@ -1,7 +1,7 @@
 #Required Variables
-variable "target_resource_group_name" {
-  type        = string
-  description = "A list of Azure Resource Group Names to which the policies will be applied."
+variable "target_resource_group" {
+  type        = any
+  description = "The resource group to which the policies will be applied."
 }
 
 variable "log_retention_days" {

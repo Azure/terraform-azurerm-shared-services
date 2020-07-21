@@ -20,7 +20,7 @@ $DIR/terraform-checkvars-common.sh
 # Apply the initial boostrapping TF, local state
 #
 rm -f bootstrap/backend.tf
-terraform init bootstrap && terraform plan bootstrap && terraform apply --auto-approve bootstrap
+terraform init bootstrap && terraform plan bootstrap && terraform apply -auto-approve bootstrap
 
 # Add remote backend
 #
@@ -46,5 +46,6 @@ echo "container_name=\"$CT_NAME\"" >> $BACKEND_CONFIG
 echo "key=\"terraform.tfstate\"" >> $BACKEND_CONFIG
 echo "access_key=$SA_KEY" >> $BACKEND_CONFIG
 
-# Re-init with remote backend
-terraform init --backend-config=./backend.config bootstrap
+# Init with remote backend
+terraform state mv *
+terraform init -backend-config=./backend.config -force-copy

@@ -7,6 +7,7 @@ locals {
   suffix                         = concat(["ss"], var.suffix)
   resource_group_location        = var.resource_group_location
   network_watcher_resource_group = "NetworkWatcherRG"
+  build_agent_subnet             = module.backend.build_subnet_id
 }
 
 module "naming" {
@@ -19,7 +20,8 @@ module "backend" {
   pat_token       = var.pat_token
   environment_id  = join("", var.suffix)
   devops_org      = var.devops_org
-  location        = var.resource_group_location
+  devops_project  = var.devops_project
+  location        = local.resource_group_location
 }
 
 module "virtual_network" {
@@ -48,7 +50,7 @@ module "virtual_network_diagnostic_settings" {
 
 module "virtual_networking_policy" {
   source                     = "./policy_assignment"
-  target_resource_group_name = module.virtual_network.resource_group.name
+  target_resource_group      = module.virtual_network.resource_group
   log_retention_days         = var.log_retention_duration
   log_analytics_workspace_id = module.audit_diagnostics_package.log_analytics_workspace.name
   log_storage_account_name   = module.audit_diagnostics_package.storage_account.name
@@ -103,7 +105,7 @@ module "audit_diagnostic_settings" {
 
 module "audit_diagnostics_policy" {
   source                     = "./policy_assignment"
-  target_resource_group_name = module.audit_diagnostics_package.resource_group.name
+  target_resource_group      = module.audit_diagnostics_package.resource_group
   log_retention_days         = var.log_retention_duration
   log_analytics_workspace_id = module.audit_diagnostics_package.log_analytics_workspace.name
   log_storage_account_name   = module.audit_diagnostics_package.storage_account.name
@@ -136,7 +138,7 @@ module "security_diagnostic_settings" {
 
 module "security_policy" {
   source                     = "./policy_assignment"
-  target_resource_group_name = module.security_package.resource_group.name
+  target_resource_group      = module.security_package.resource_group
   log_retention_days         = var.log_retention_duration
   log_analytics_workspace_id = module.audit_diagnostics_package.log_analytics_workspace.name
   log_storage_account_name   = module.audit_diagnostics_package.storage_account.name
@@ -150,6 +152,7 @@ resource "azurerm_resource_group" "persistent_data" {
 module "persistent_data" {
   source                           = "git::https://github.com/Azure/terraform-azurerm-sec-storage-account"
   resource_group_name              = azurerm_resource_group.persistent_data.name
+  resource_group_location          = azurerm_resource_group.persistent_data.location
   storage_account_name             = join("", ["persistent", module.naming.storage_account.name_unique])
   storage_account_tier             = "Standard"
   storage_account_replication_type = "LRS"
@@ -165,16 +168,15 @@ module "persistent_data" {
 #TODO: Check for key standard i.e key bit length and preferred crypto algorithm
 module "persistent_data_managed_encryption_key" {
   source                 = "git::https://github.com/Azure/terraform-azurerm-sec-storage-managed-encryption-key"
-  resource_group_name    = module.security_package.resource_group.name
   storage_account        = module.persistent_data.storage_account
-  key_vault_name         = module.security_package.key_vault.name
+  key_vault_id           = module.security_package.key_vault.id
   client_key_permissions = ["get", "delete", "create", "unwrapkey", "wrapkey", "update"]
   suffix                 = local.suffix
 }
 
 module "data_policy" {
   source                     = "./policy_assignment"
-  target_resource_group_name = azurerm_resource_group.persistent_data.name
+  target_resource_group      = azurerm_resource_group.persistent_data
   log_retention_days         = var.log_retention_duration
   log_analytics_workspace_id = module.audit_diagnostics_package.log_analytics_workspace.name
   log_storage_account_name   = module.audit_diagnostics_package.storage_account.name
