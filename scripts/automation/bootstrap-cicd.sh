@@ -22,9 +22,17 @@ $DIR/terraform-checkvars-common.sh
 rm -f bootstrap/backend.tf
 terraform init bootstrap && terraform plan bootstrap && terraform apply -auto-approve bootstrap
 
+# Move bootstrap to the module it becomes in root and then re-init with remote backend
+
+resources=$(terraform state list)
+
+for resource in $resources
+do
+  terraform state mv $resource module.backend.$resource
+done
+
 # Add remote backend
-#
-cat << EOF > bootstrap/backend.tf
+cat << EOF > backend.tf
 terraform { 
     backend "azurerm" {} 
 }
@@ -45,14 +53,5 @@ echo "storage_account_name=\"$SA_NAME\"" >> $BACKEND_CONFIG
 echo "container_name=\"$CT_NAME\"" >> $BACKEND_CONFIG
 echo "key=\"terraform.tfstate\"" >> $BACKEND_CONFIG
 echo "access_key=$SA_KEY" >> $BACKEND_CONFIG
-
-# Move bootstrap to the module it becomes in root and then re-init with remote backend
-
-resources=$(terraform state list)
-
-for resource in $resources
-do
-  terraform state mv $resource module.backend.$resource
-done
 
 terraform init -backend-config=./backend.config -force-copy
