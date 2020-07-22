@@ -1,3 +1,7 @@
+output "resource_group" {
+  value = var.resource_group
+}
+
 output "firewall_subnet" {
   value = azurerm_subnet.firewall_subnet
 }

@@ -171,7 +171,7 @@ data "azuredevops_project" "devops_project" {
 
 resource "azuredevops_serviceendpoint_dockerregistry" "build" {
     project_id            = data.azuredevops_project.devops_project.id
-    service_endpoint_name = "acr_connection"
+    service_endpoint_name = "acr_connection_${var.environment_id}"
     docker_registry       = azurerm_container_registry.build.login_server
     registry_type         = "Others"
 }
