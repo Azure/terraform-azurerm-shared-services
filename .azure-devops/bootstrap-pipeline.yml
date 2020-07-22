@@ -34,4 +34,6 @@ stages:
             ARM_TENANT_ID: $(AzCreds.AZ_TENANT)
             TF_VAR_environment_id: $(ENVIRONMENT_ID)
             TF_VAR_location: $(LOCATION)
-            TF_VAR_virtual_network_cidr: $(SUBNET_CIDR)
+            TF_VAR_devops_org: $(ADO_ORG)
+            TF_VAR_devops_project: $(ADO_PROJECT)
+            TF_VAR_pat_token: $(ADO_PAT_TOKEN)
