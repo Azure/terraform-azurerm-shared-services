@@ -1,16 +1,8 @@
-resources:
-  pipelines:
-  - pipeline: Bootstrap-CICD
-    source: Bootstrap-CICD
-    trigger:
-      branches:
-        - master
-
 stages:
-  - stage: 
+  - stage: Bootstrap
     jobs:
 
-    - job: Boostrap CICD
+    - job: Bootstrap
       workspace:  
         clean: all
       
@@ -31,9 +23,10 @@ stages:
                 AZ_SUB_ID=`az account show -o tsv | awk '{ print $3 }'`
                 echo '##vso[task.setvariable variable=AZ_SUB_ID;isOutput=true]'$AZ_SUB_ID
 
-        - bash: ./scripts/automation/bootstrap.sh
+
+        - bash: ./scripts/automation/bootstrap-cicd.sh
           workingDirectory: .
-          displayName: 'Bootstrap CI/CD environment'
+          displayName: 'Bootstrap Build environment'
           env:
             ARM_CLIENT_ID: $(AzCreds.AZ_SPN)
             ARM_CLIENT_SECRET: $(AzCreds.AZ_SPN_KEY)
@@ -41,3 +34,4 @@ stages:
             ARM_TENANT_ID: $(AzCreds.AZ_TENANT)
             TF_VAR_environment_id: $(ENVIRONMENT_ID)
             TF_VAR_location: $(LOCATION)
+            TF_VAR_virtual_network_cidr: $(SUBNET_CIDR)
