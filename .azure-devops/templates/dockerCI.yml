@@ -1,6 +1,5 @@
 parameters:
 - name: DOCKER_REGISTRY_SERVICE_CONNECTION
-- name: DOCKER_REGISTRY_URL
 
 jobs:
 - job: DockerCI
@@ -25,7 +24,7 @@ jobs:
   - bash: scripts/automation/docker-ci.sh
     displayName: 'Docker CI'
     env:
-      DOCKER_REGISTRY_URL: ${{ parameters.DOCKER_REGISTRY_URL }}
+      DOCKER_REGISTRY_URL: acr${ENVIRONMENT_ID}.azurecr.io
       DOCKERFILE_PATH: ".devcontainer/Dockerfile"
       DOCKER_IMAGE_NAME: "devcontainer"
       DOCKER_IMAGE_TAG: $(Version.VER)
