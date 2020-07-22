@@ -31,27 +31,5 @@ do
   terraform state mv $resource module.backend.$resource
 done
 
-# Add remote backend
-cat << EOF > backend.tf
-terraform { 
-    backend "azurerm" {} 
-}
-EOF
-
-RG_NAME=backend-${TF_VAR_environment_id}
-SA_NAME=${TF_VAR_environment_id}
-CT_NAME="terraform-tfstate"
-SA_KEY=$(az storage account keys list --resource-group $RG_NAME --account-name $SA_NAME --query "[0].value")
-
-# Create fresh backend.config
-
-BACKEND_CONFIG="backend.config"
-
-rm -f $BACKEND_CONFIG
-echo "resource_group_name=\"$RG_NAME\"" >> $BACKEND_CONFIG
-echo "storage_account_name=\"$SA_NAME\"" >> $BACKEND_CONFIG
-echo "container_name=\"$CT_NAME\"" >> $BACKEND_CONFIG
-echo "key=\"terraform.tfstate\"" >> $BACKEND_CONFIG
-echo "access_key=$SA_KEY" >> $BACKEND_CONFIG
-
+$DIR/create_backend_config.sh
 terraform init -backend-config=./backend.config -force-copy
