@@ -3,10 +3,10 @@ stages:
     jobs:
     - template: templates/dockerCI.yml
       parameters:
-        DOCKER_REGISTRY_SERVICE_CONNECTION: brightsideACR
-        DOCKER_REGISTRY_URL: brdev.azurecr.io
+        DOCKER_REGISTRY_SERVICE_CONNECTION: acr_connection
+        DOCKER_REGISTRY_URL: acr${ENVIRONMENT_ID}.azurecr.io
     - template: templates/terraformCI.yml
       parameters:
-        DOCKER_IMAGE: brightside-dev:latest
-        DOCKER_REGISTRY_SERVICE_CONNECTION: brightsideACR
+        DOCKER_IMAGE: ssbuild-dev:latest
+        DOCKER_REGISTRY_SERVICE_CONNECTION: acr_connection
       
