@@ -165,6 +165,12 @@ module "persistent_data" {
   bypass_internal_network_rules        = true
 }
 
+resource "azurerm_storage_container" "private_container" {
+  name                  = "private-container"
+  storage_account_name  =  module.persistent_data.storage_account.name
+  container_access_type = "private"
+}
+
 #TODO: Check for key standard i.e key bit length and preferred crypto algorithm
 module "persistent_data_managed_encryption_key" {
   source                 = "git::https://github.com/Azure/terraform-azurerm-sec-storage-managed-encryption-key"
