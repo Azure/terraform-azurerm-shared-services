@@ -8,7 +8,7 @@ cd agent
 wget -O $AGENT_ARCHIVE https://vstsagentpackage.azureedge.net/agent/$AGENT_VERSION/$AGENT_ARCHIVE
 tar xvfz $AGENT_ARCHIVE
 ./bin/installdependencies.sh
-AGENT_ALLOW_RUNASROOT="1" ./config.sh --unattended --url ${ORG}  --auth pat --token ${PAT} --pool default --agent ${NAME}  --acceptTeeEula
+AGENT_ALLOW_RUNASROOT="1" ./config.sh --unattended --url ${ORG}  --auth pat --token ${PAT} --pool ${POOL} --agent ${NAME}  --acceptTeeEula
 ./svc.sh install
 ./svc.sh start
 

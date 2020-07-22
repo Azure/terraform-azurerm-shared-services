@@ -3,6 +3,12 @@ provider "azurerm" {
   features {}
 }
 
+provider "azuredevops" {
+  version               = ">= 0.0.1"
+  org_service_url       = var.devops_org
+  personal_access_token = var.pat_token
+}
+
 ##########################
 # Inputs
 ##########################
@@ -32,6 +38,12 @@ variable "pat_token" {
   description = "PAT token with 'Owner' level access. Create this token via https://dev.azure.com/<ORG>/_usersSettings/tokens"
 }
 
+variable "agent_pool" {
+  type        = string
+  description = "Name of an agent pool that will be created within the ADO project"
+  default     = "SharedServices"
+}
+
 ##########################
 # Backend Storage Account
 ##########################
@@ -53,6 +65,15 @@ resource "azurerm_storage_account" "backend" {
 resource "azurerm_storage_container" "backend" {
   name                 = "terraform-tfstate"
   storage_account_name = azurerm_storage_account.backend.name
+}
+
+##########################
+# Build Agent Pool
+##########################
+
+source "azuredevops_agent_pool" "build" {
+  name           = var.agent_pool
+  auto_provision = true
 }
 
 ##########################
@@ -118,6 +139,8 @@ resource "azurerm_virtual_machine" "build" {
   os_profile_linux_config {
     disable_password_authentication = false
   }
+
+  depends_on        = [ azuredevops_agent_pool.build ]
 }
 
 ######################################
@@ -136,14 +159,14 @@ resource "azurerm_virtual_machine_extension" "build" {
         "script": "${base64encode(templatefile("${path.module}/agent_installer.sh", {
           ORG="${var.devops_org}",
           PAT="${var.pat_token}",
-          NAME=azurerm_virtual_machine.build.name
+          NAME=azurerm_virtual_machine.build.name,
+          POOL="${var.agent_pool}"
         }))}"
     }
 SCRIPT
 
-
   tags = {
-    environment = "Production"
+    environment = "Build"
   }
 }
 
@@ -157,12 +180,6 @@ resource "azurerm_container_registry" "build" {
   location                 = azurerm_resource_group.backend.location
   sku                      = "Basic"
   admin_enabled            = false
-}
-
-provider "azuredevops" {
-  version               = ">= 0.0.1"
-  org_service_url       = var.devops_org
-  personal_access_token = var.pat_token
 }
 
 data "azuredevops_project" "devops_project" {

@@ -1,4 +1,4 @@
-stages:
+tages:
   - stage: CI
     jobs:
     - template: templates/dockerCI.yml
