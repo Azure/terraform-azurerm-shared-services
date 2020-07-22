@@ -2,9 +2,6 @@ resources:
   pipelines:
   - pipeline: SharedServices-CI
     source: SharedServices-CI
-    trigger:
-      branches:
-        - master
 
 stages:
   - stage: CD
