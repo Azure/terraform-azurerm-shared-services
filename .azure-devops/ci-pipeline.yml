@@ -4,7 +4,6 @@ stages:
     - template: templates/dockerCI.yml
       parameters:
         DOCKER_REGISTRY_SERVICE_CONNECTION: acr_connection
-        DOCKER_REGISTRY_URL: acr${ENVIRONMENT_ID}.azurecr.io
     - template: templates/terraformCI.yml
       parameters:
         DOCKER_IMAGE: ssbuild-dev:latest
