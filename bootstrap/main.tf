@@ -71,7 +71,7 @@ resource "azurerm_storage_container" "backend" {
 # Build Agent Pool
 ##########################
 
-source "azuredevops_agent_pool" "build" {
+resource "azuredevops_agent_pool" "build" {
   name           = var.agent_pool
   auto_provision = true
 }
