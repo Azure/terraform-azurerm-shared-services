@@ -24,7 +24,7 @@ jobs:
   - bash: scripts/automation/docker-ci.sh
     displayName: 'Docker CI'
     env:
-      DOCKER_REGISTRY_URL: acr${ENVIRONMENT_ID}.azurecr.io
+      DOCKER_REGISTRY_URL: acr$(ENVIRONMENT_ID).azurecr.io
       DOCKERFILE_PATH: ".devcontainer/Dockerfile"
       DOCKER_IMAGE_NAME: "devcontainer"
       DOCKER_IMAGE_TAG: $(Version.VER)
