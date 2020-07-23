@@ -3,6 +3,12 @@ provider "azurerm" {
   features {}
 }
 
+provider "azuredevops" {
+  version               = ">= 0.0.1"
+  org_service_url       = var.devops_org
+  personal_access_token = var.devops_pat_token
+}
+
 locals {
   suffix                         = concat(["ss"], var.suffix)
   resource_group_location        = var.resource_group_location
@@ -16,11 +22,11 @@ module "naming" {
 }
 
 module "backend" {
-  source           = "./bootstrap"
+  source           = "./build_environment"
   environment_id   = join("", var.suffix)
-  devops_org       = var.devops_org
-  devops_project   = var.devops_project
-  devops_pat_token = var.devops_pat_token
+  org              = var.devops_org
+  project          = var.devops_project
+  pat_token        = var.devops_pat_token
   location         = local.resource_group_location
 }
 
