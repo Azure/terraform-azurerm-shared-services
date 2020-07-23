@@ -8,8 +8,7 @@ jobs:
 
 - job: DockerCI
 
-  pool:
-    vmImage: 'ubuntu-latest'
+  pool: SharedServices
 
   steps:
   - task: Docker@2
