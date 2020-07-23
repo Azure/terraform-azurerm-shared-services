@@ -22,16 +22,24 @@ if [[ ! -z $(git diff @~..@ .devcontainer/) ]]; then
   DOCKER_IMAGE="${DOCKER_REGISTRY_URL}/${DOCKER_IMAGE_NAME}"
   DOCKER_IMAGE_WITH_TAG="${DOCKER_IMAGE}:${DOCKER_IMAGE_TAG}"
   DOCKER_IMAGE_LATEST="${DOCKER_IMAGE}:latest"
+
+  echo "Building ${DOCKER_IMAGE}"
+  docker build -t "${DOCKER_IMAGE_WITH_TAG}" -f "${DOCKERFILE_PATH}" .
+
+  # Iff main/master then publish
+  #
+  if [[ $(git rev-parse --abbrev-ref HEAD) == 'master' ]]; then
+    echo "Publishing ${DOCKER_IMAGE}"
+    docker push "${DOCKER_IMAGE_WITH_TAG}"
+    docker tag "${DOCKER_IMAGE_WITH_TAG}" "${DOCKER_IMAGE_LATEST}"
+    docker push "${DOCKER_IMAGE_LATEST}"
+  else
+    echo "Not a main branch build, not publishing latest"
+  fi
+
+else
+  echo "No changes detected in .devcontainer, skipping build"
 fi
 
-echo "Building ${DOCKER_IMAGE}"
-docker build -t "${DOCKER_IMAGE_WITH_TAG}" -f "${DOCKERFILE_PATH}" .
 
-# Iff main/master then publish
-#
-if [[ $(git rev-parse --abbrev-ref HEAD) == 'master' ]]; then
-  echo "Publishing ${DOCKER_IMAGE}"
-  docker push "${DOCKER_IMAGE_WITH_TAG}"
-  docker tag "${DOCKER_IMAGE_WITH_TAG}" "${DOCKER_IMAGE_LATEST}"
-  docker push "${DOCKER_IMAGE_LATEST}"
-fi
+
