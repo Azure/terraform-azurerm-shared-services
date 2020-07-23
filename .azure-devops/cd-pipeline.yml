@@ -3,11 +3,11 @@ stages:
     jobs:
 
     - job: CD
-      pool: $(BUILD_AGENT_POOL_NAME)
+      pool: SharedServices
       workspace:  
         clean: all
       container:
-        image: devcontainer:latest
+        image: ssbuild-dev
         endpoint: acr-shared-services
       
       steps:
@@ -16,7 +16,7 @@ stages:
           name: AzCreds
           displayName: Get Azure Credentials
           inputs:
-              azureSubscription: brightsideARM-tobe
+              azureSubscription: rm-shared-services
               scriptType: bash
               addSpnToEnvironment: true
               scriptLocation: inlineScript
