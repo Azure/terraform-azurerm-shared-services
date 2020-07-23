@@ -29,8 +29,7 @@ jobs:
 
   dependsOn: DockerCI
 
-  pool:
-    vmImage: 'ubuntu-latest'
+  pool: SharedServices
 
   container:
     image: $(DOCKER_IMAGE_NAME)
