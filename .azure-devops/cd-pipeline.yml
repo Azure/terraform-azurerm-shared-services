@@ -39,3 +39,6 @@ stages:
             TF_VAR_environment_id: $(ENVIRONMENT_ID)
             TF_VAR_location: $(LOCATION)
             TF_VAR_virtual_network_cidr: $(SUBNET_CIDR)
+            TF_VAR_devops_org: $(DEVOPS_ORG)
+            TF_VAR_devops_project: $(DEVOPS_PROJECT)
+            TF_VAR_devops_pat_token: $(DEVOPS_PAT_TOKEN)

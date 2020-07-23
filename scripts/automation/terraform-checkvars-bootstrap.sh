@@ -21,9 +21,9 @@ if [ -z "${TF_VAR_devops_project}" ]; then
   fail=1
 fi
 
-if [ -z "${TF_VAR_pat_token}" ]; then
+if [ -z "${TF_VAR_devops_pat_token}" ]; then
   echo
-  echo "TF_VAR_pat_token not set."
+  echo "TF_VAR_devops_pat_token not set."
   echo "Please set to the a PAT token with 'Full' access to the devops project"
   echo "(See  https://dev.azure.com/<MY_AWESOME_DEV_ORG>/_usersSettings/tokens)"
   fail=1

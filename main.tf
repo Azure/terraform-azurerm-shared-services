@@ -17,10 +17,10 @@ module "naming" {
 
 module "backend" {
   source          = "./bootstrap"
-  pat_token       = var.pat_token
   environment_id  = join("", var.suffix)
   devops_org      = var.devops_org
   devops_project  = var.devops_project
+  devops_pat_token= var.devops_pat_token
   location        = local.resource_group_location
 }
 

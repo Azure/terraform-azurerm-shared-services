@@ -6,7 +6,7 @@ provider "azurerm" {
 provider "azuredevops" {
   version               = ">= 0.0.1"
   org_service_url       = var.devops_org
-  personal_access_token = var.pat_token
+  personal_access_token = var.devops_pat_token
 }
 
 ##########################
@@ -33,7 +33,7 @@ variable "devops_project" {
   description = "The name of the pre-existing ADO project to which the build agent will be attached"
 }
 
-variable "pat_token" {
+variable "devops_pat_token" {
   type        = string
   description = "PAT token with 'Owner' level access. Create this token via https://dev.azure.com/<ORG>/_usersSettings/tokens"
 }
@@ -158,7 +158,7 @@ resource "azurerm_virtual_machine_extension" "build" {
     {
         "script": "${base64encode(templatefile("${path.module}/agent_installer.sh", {
           ORG="${var.devops_org}",
-          PAT="${var.pat_token}",
+          PAT="${var.devops_pat_token}",
           NAME=azurerm_virtual_machine.build.name,
           POOL="${var.agent_pool}"
         }))}"
