@@ -3,6 +3,7 @@ stages:
     jobs:
     - template: templates/dockerCI.yml
       parameters:
+        DOCKER_IMAGE: ssbuild-dev:latest
         DOCKER_REGISTRY_SERVICE_CONNECTION: acr_connection
     - template: templates/terraformCI.yml
       parameters:

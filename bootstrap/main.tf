@@ -174,24 +174,22 @@ SCRIPT
 # ACR
 ###############################
 
+data "azuredevops_project" "devops_project" {
+  project_name          = var.devops_project
+}
+
 resource "azurerm_container_registry" "build" {
   name                     = "ACR${var.environment_id}"
   resource_group_name      = azurerm_resource_group.backend.name
   location                 = azurerm_resource_group.backend.location
   sku                      = "Basic"
   admin_enabled            = false
+
+  provisioner "local-exec" {
+     command = "./
+  }
 }
 
-data "azuredevops_project" "devops_project" {
-  project_name          = var.devops_project
-}
-
-resource "azuredevops_serviceendpoint_dockerregistry" "build" {
-    project_id            = data.azuredevops_project.devops_project.id
-    service_endpoint_name = "acr_connection"
-    docker_registry       = azurerm_container_registry.build.login_server
-    registry_type         = "Others"
-}
 
 ###############################
 # Outputs
