@@ -17,7 +17,7 @@ fi
 
 # Only build if .devcontainer has changed
 #
-if [[ -z $(git diff @~..@ .devcontainer/) ]]; then
+if [[ ! -z $(git diff @~..@ .devcontainer/) ]]; then
   DOCKER_IMAGE_TAG=$(git rev-parse --short HEAD)
   DOCKER_IMAGE="${DOCKER_REGISTRY_URL}/${DOCKER_IMAGE_NAME}"
   DOCKER_IMAGE_WITH_TAG="${DOCKER_IMAGE}:${DOCKER_IMAGE_TAG}"
@@ -27,7 +27,7 @@ fi
 echo "Building ${DOCKER_IMAGE}"
 docker build -t "${DOCKER_IMAGE_WITH_TAG}" -f "${DOCKERFILE_PATH}" .
 
-# Iff main/master publish
+# Iff main/master then publish
 #
 if [[ $(git rev-parse --abbrev-ref HEAD) == 'master' ]]; then
   echo "Publishing ${DOCKER_IMAGE}"
