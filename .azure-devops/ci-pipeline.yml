@@ -35,7 +35,7 @@ jobs:
 
   container:
     image: $(DOCKER_IMAGE)
-    endpoint: $(DOCKER_REGISTRY_SERVICE_CONNECTION)
+    endpoint: acr_connection
 
   steps:
   - task: AzureCLI@2
