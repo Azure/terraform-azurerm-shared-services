@@ -64,3 +64,4 @@ jobs:
       ARM_TENANT_ID: $(AzCreds.AZ_TENANT)
       TF_VAR_virtual_network_cidr: $(SHARED_VNET_CIDR)
       TF_VAR_location: $(LOCATION)
+      TF_VAR_environment_id: $(ENVIRONMENT_ID)
