@@ -16,7 +16,7 @@ jobs:
     displayName: Login to ACR
     inputs:
       command: login
-      containerRegistry: $(parameters.DOCKER_REGISTRY_SERVICE_CONNECTION)
+      containerRegistry: $(DOCKER_REGISTRY_SERVICE_CONNECTION)
 
   - bash: scripts/automation/docker-ci.sh
     displayName: 'Docker CI'
@@ -24,7 +24,6 @@ jobs:
       DOCKER_REGISTRY_URL: acr$(ENVIRONMENT_ID).azurecr.io
       DOCKERFILE_PATH: ".devcontainer/Dockerfile"
       DOCKER_IMAGE_NAME: $(DOCKER_IMAGE_NAME)
-      DOCKER_IMAGE_TAG: $(Version.VER)
 
 
 - job: TerraformCI
@@ -35,8 +34,8 @@ jobs:
     vmImage: 'ubuntu-latest'
 
   container:
-    image: $(parameters.DOCKER_IMAGE)
-    endpoint: $(parameters.DOCKER_REGISTRY_SERVICE_CONNECTION)
+    image: $(DOCKER_IMAGE)
+    endpoint: $(DOCKER_REGISTRY_SERVICE_CONNECTION)
 
   steps:
   - task: AzureCLI@2
