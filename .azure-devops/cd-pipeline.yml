@@ -8,7 +8,7 @@ stages:
         clean: all
       container:
         image: devcontainer:latest
-        endpoint: acr_connection
+        endpoint: acr-shared-services
       
       steps:
         - checkout: self

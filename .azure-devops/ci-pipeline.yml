@@ -1,6 +1,6 @@
 variables:
 - name: DOCKER_REGISTRY_SERVICE_CONNECTION
-  value: acr_connection
+  value: acr-shared-services 
 - name: DOCKER_IMAGE_NAME
   value: ssbuild-dev
 
@@ -16,7 +16,7 @@ jobs:
     displayName: Login to ACR
     inputs:
       command: login
-      containerRegistry: acr_connection
+      containerRegistry: acr-shared-services
 
   - bash: scripts/automation/docker-ci.sh
     displayName: 'Docker CI'
@@ -35,7 +35,7 @@ jobs:
 
   container:
     image: $(DOCKER_IMAGE_NAME)
-    endpoint: acr_connection
+    endpoint: acr-shared-services
 
   steps:
   - task: AzureCLI@2
