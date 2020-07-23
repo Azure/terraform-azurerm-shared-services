@@ -16,7 +16,7 @@ jobs:
     displayName: Login to ACR
     inputs:
       command: login
-      containerRegistry: $(DOCKER_REGISTRY_SERVICE_CONNECTION)
+      containerRegistry: acr_connection
 
   - bash: scripts/automation/docker-ci.sh
     displayName: 'Docker CI'
