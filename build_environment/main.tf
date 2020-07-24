@@ -177,6 +177,11 @@ resource "azurerm_container_registry" "build" {
   provisioner "local-exec" {
     command = "${path.module}/create_acr_connection.sh"
   }
+
+  provisioner "local-exec" {
+    when    = "destroy"
+    command = "${path.module}/destroy_acr_connection.sh"
+  }
 }
 
 
