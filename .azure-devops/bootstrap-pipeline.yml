@@ -12,7 +12,7 @@ stages:
           name: AzCreds
           displayName: Get Azure Credentials
           inputs:
-              azureSubscription: brightsideARM-tobe
+              azureSubscription: rm-shared-services
               scriptType: bash
               addSpnToEnvironment: true
               scriptLocation: inlineScript
