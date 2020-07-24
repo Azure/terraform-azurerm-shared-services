@@ -7,7 +7,9 @@ stages:
         clean: all
       
       steps:
+
         - checkout: self
+
         - task: AzureCLI@2
           name: AzCreds
           displayName: Get Azure Credentials
@@ -23,7 +25,6 @@ stages:
                 AZ_SUB_ID=`az account show -o tsv | awk '{ print $3 }'`
                 echo '##vso[task.setvariable variable=AZ_SUB_ID;isOutput=true]'$AZ_SUB_ID
 
-
         - bash: ./scripts/automation/bootstrap-cicd.sh
           workingDirectory: .
           displayName: 'Bootstrap Build environment'
@@ -37,3 +38,24 @@ stages:
             TF_VAR_devops_org: $(DEVOPS_ORG)
             TF_VAR_devops_project: $(DEVOPS_PROJECT)
             TF_VAR_devops_pat_token: $(DEVOPS_PAT_TOKEN)
+
+    - job: DockerFirstBuild
+
+      pool: SharedServices
+
+      steps:
+      - task: Docker@2
+        displayName: Login to ACR
+        inputs:
+          command: login
+          containerRegistry: acr-shared-services
+
+      - bash: scripts/automation/docker-ci.sh
+        displayName: 'Docker CI'
+        env:
+          DOCKER_FIRST_BUILD : 1
+          DOCKER_REGISTRY_URL: acr$(ENVIRONMENT_ID).azurecr.io
+          DOCKERFILE_PATH: ".devcontainer/Dockerfile"
+          DOCKER_IMAGE_NAME: $(DOCKER_IMAGE_NAME)
+
+
