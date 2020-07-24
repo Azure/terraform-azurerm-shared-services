@@ -173,6 +173,10 @@ resource "azurerm_container_registry" "build" {
   location                 = azurerm_resource_group.backend.location
   sku                      = "Basic"
   admin_enabled            = false
+
+  provisioner "local-exec" {
+    command = "${path.module}/create_acr_connection.sh"
+  }
 }
 
 
