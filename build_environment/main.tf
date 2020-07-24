@@ -175,12 +175,14 @@ resource "azurerm_container_registry" "build" {
   admin_enabled            = false
 
   provisioner "local-exec" {
-    command = "${path.module}/create_acr_connection.sh"
+    command = "create_acr_connection.sh"
+    working_dir = "${path.module}"
   }
 
   provisioner "local-exec" {
     when    = "destroy"
-    command = "${path.module}/destroy_acr_connection.sh"
+    command = "destroy_acr_connection.sh"
+    working_dir = "${path.module}"
   }
 }
 
