@@ -7,7 +7,10 @@ ACR_NAME=ACR$TF_VAR_environment_id
 ACR_HOSTNAME=acr$TF_VAR_environment_id
 CONNECTION_NAME=acr_shared_services
 
+export AZURE_DEVOPS_EXT_PAT=$TF_VAR_devops_pat_token
 az login --service-principal --username $ARM_CLIENT_ID --password $ARM_CLIENT_SECRET --tenant $ARM_TENANT_ID
+az devops login --organization $TF_VAR_devops_org
+
 PROJECT_ID=$(az devops project show -p $TF_VAR_devops_project --organization $TF_VAR_devops_org --query "id" -o tsv)
 
 sed \
