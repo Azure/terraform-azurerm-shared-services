@@ -31,8 +31,12 @@ DOCKER_IMAGE_WITH_TAG="${DOCKER_IMAGE}:${DOCKER_IMAGE_TAG}"
 DOCKER_IMAGE_LATEST="${DOCKER_IMAGE}:latest"
 
 # If image doesn't exist, force build and push
-$(set +e; docker pull "${DOCKER_IMAGE_LATEST}")
-if [[ ! $? = 0 ]]; then
+set +e
+docker pull "${DOCKER_IMAGE_LATEST}"
+DEV_CONTAINER_MISSING=$?
+set -e
+
+if [[ $DEV_CONTAINER_MISSING = 1 ]]; then
   BUILD_REQUIRED=true
   PUSH_REQUIRED=true
 fi
