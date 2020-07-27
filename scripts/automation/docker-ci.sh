@@ -25,6 +25,11 @@ if [[ $(git rev-parse --abbrev-ref HEAD) == 'master' || ! -z $(git diff @~..@ .d
   PUSH_REQUIRED=true
 fi
 
+DOCKER_IMAGE_TAG=$(git rev-parse --short HEAD)
+DOCKER_IMAGE="${DOCKER_REGISTRY_URL}/${DOCKER_IMAGE_NAME}"
+DOCKER_IMAGE_WITH_TAG="${DOCKER_IMAGE}:${DOCKER_IMAGE_TAG}"
+DOCKER_IMAGE_LATEST="${DOCKER_IMAGE}:latest"
+
 # If image doesn't exist, force build and push
 docker pull "${DOCKER_IMAGE_LATEST}"
 if [[ ! $? = 0 ]]; then
@@ -33,11 +38,6 @@ if [[ ! $? = 0 ]]; then
 fi
 
 if [[ $BUILD_REQUIRED = true ]]; then
-
-  DOCKER_IMAGE_TAG=$(git rev-parse --short HEAD)
-  DOCKER_IMAGE="${DOCKER_REGISTRY_URL}/${DOCKER_IMAGE_NAME}"
-  DOCKER_IMAGE_WITH_TAG="${DOCKER_IMAGE}:${DOCKER_IMAGE_TAG}"
-  DOCKER_IMAGE_LATEST="${DOCKER_IMAGE}:latest"
 
   echo "Building ${DOCKER_IMAGE}"
   docker build -t "${DOCKER_IMAGE_WITH_TAG}" -f "${DOCKERFILE_PATH}" .

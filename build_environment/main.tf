@@ -175,7 +175,7 @@ resource "azurerm_container_registry" "build" {
   admin_enabled            = false
 
   provisioner "local-exec" {
-    command = "pwd && ls && ./create_acr_connection.sh"
+    command = "./create_acr_connection.sh"
     working_dir = "${path.module}"
   }
 
