@@ -24,12 +24,12 @@ terraform init bootstrap && terraform plan bootstrap && terraform apply -auto-ap
 
 # Move bootstrap to the module it becomes in root and then re-init with remote backend
 
-resources=$(terraform state list)
+#resources=$(terraform state list)
 
-for resource in $resources
-do
-  terraform state mv $resource module.backend.$resource
-done
+#for resource in $resources
+#do
+#  terraform state mv $resource module.backend.$resource
+#done
 
 $DIR/create_backend_config.sh
 terraform init -backend-config=./backend.config -force-copy
