@@ -42,7 +42,7 @@ provider "azuredevops" {
 
 ###############################################################
 
-module "build_environment" {
+module "backend" {
   source = "../build_environment"
   org = var.devops_org
   project = var.devops_project
