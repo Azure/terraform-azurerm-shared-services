@@ -13,7 +13,9 @@ locals {
   suffix                         = concat(["ss"], var.suffix)
   resource_group_location        = var.resource_group_location
   network_watcher_resource_group = "NetworkWatcherRG"
-  build_agent_subnet             = module.backend.build_subnet_id
+  build_agent_subnet_id          = module.backend.build_subnet_id
+  authorized_audit_subnet_ids    = concat(var.authorized_audit_subnet_ids, [ local.build_agent_subnet_id ])
+  authorized_security_subnet_ids = concat(var.authorized_security_subnet_ids, [ local.build_agent_subnet_id ])
 }
 
 module "naming" {
@@ -22,12 +24,12 @@ module "naming" {
 }
 
 module "backend" {
-  source           = "./build_environment"
-  environment_id   = join("", var.suffix)
-  org              = var.devops_org
-  project          = var.devops_project
-  pat_token        = var.devops_pat_token
-  location         = local.resource_group_location
+  source         = "./build_environment"
+  environment_id = join("", var.suffix)
+  org            = var.devops_org
+  project        = var.devops_project
+  pat_token      = var.devops_pat_token
+  location       = local.resource_group_location
 }
 
 module "virtual_network" {
@@ -96,7 +98,7 @@ module "audit_diagnostics_package" {
   #TODO: Work out what additional if any allowed ip ranges and permitted virtual network subnets there needs to be.
 
   allowed_ip_ranges                    = concat([], var.authorized_audit_client_ips)
-  permitted_virtual_network_subnet_ids = concat([], var.authorized_audit_subnet_ids)
+  permitted_virtual_network_subnet_ids = concat([], local.authorized_audit_subnet_ids)
   bypass_internal_network_rules        = true
 }
 
@@ -127,7 +129,7 @@ module "security_package" {
   #TODO: Work out what additional if any allowed ip ranges and permitted virtual network subnets there needs to be.
 
   allowed_ip_ranges                    = concat([], var.authorized_security_client_ips)
-  permitted_virtual_network_subnet_ids = concat([], var.authorized_security_subnet_ids)
+  permitted_virtual_network_subnet_ids = concat([], local.authorized_security_subnet_ids)
   sku_name                             = "standard"
   enabled_for_deployment               = true
   enabled_for_disk_encryption          = true
@@ -173,7 +175,7 @@ module "persistent_data" {
 
 resource "azurerm_storage_container" "private_container" {
   name                  = "private-container"
-  storage_account_name  =  module.persistent_data.storage_account.name
+  storage_account_name  = module.persistent_data.storage_account.name
   container_access_type = "private"
 }
 
