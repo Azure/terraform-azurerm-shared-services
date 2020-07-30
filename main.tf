@@ -142,6 +142,7 @@ resource "azurerm_resource_group" "persistent_data" {
 module "persistent_data" {
   source                           = "git::https://github.com/Azure/terraform-azurerm-sec-storage-account"
   resource_group_name              = azurerm_resource_group.persistent_data.name
+  resource_group_location          = azurerm_resource_group.persistent_data.location
   storage_account_name             = join("", ["persistent", module.naming.storage_account.name_unique])
   storage_account_tier             = "Standard"
   storage_account_replication_type = "LRS"
@@ -156,18 +157,16 @@ module "persistent_data" {
 
 resource "azurerm_storage_container" "private_container" {
   name                  = "private-container"
-  storage_account_name  =  module.persistent_data.storage_account.name
+  storage_account_name  = module.persistent_data.storage_account.name
   container_access_type = "private"
 }
 
 #TODO: Check for key standard i.e key bit length and preferred crypto algorithm
 module "persistent_data_managed_encryption_key" {
-  source                 = "git::https://github.com/Azure/terraform-azurerm-sec-storage-managed-encryption-key"
-  resource_group_name    = module.security_package.resource_group.name
-  storage_account        = module.persistent_data.storage_account
-  key_vault_name         = module.security_package.key_vault.name
-  client_key_permissions = ["get", "delete", "create", "unwrapkey", "wrapkey", "update"]
-  suffix                 = local.suffix
+  source          = "git::https://github.com/Azure/terraform-azurerm-sec-storage-managed-encryption-key"
+  storage_account = module.persistent_data.storage_account
+  key_vault_id    = module.security_package.key_vault.id
+  suffix          = local.suffix
 }
 
 module "data_policy" {

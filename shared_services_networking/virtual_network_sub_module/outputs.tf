@@ -7,7 +7,7 @@ output "secrets_subnet" {
 }
 
 output "secrets_subnet_network_security_group" {
-  value = module.secrets_nsg.network_security_groups
+  value = azurerm_network_security_group.secrets_nsg
 }
 
 output "audit_subnet" {
@@ -15,7 +15,7 @@ output "audit_subnet" {
 }
 
 output "audit_subnet_network_security_group" {
-  value = module.audit_nsg.network_security_groups
+  value = azurerm_network_security_group.audit_nsg
 }
 
 output "data_subnet" {
@@ -23,7 +23,7 @@ output "data_subnet" {
 }
 
 output "data_subnet_network_security_group" {
-  value = module.data_nsg.network_security_groups
+  value = azurerm_network_security_group.data_nsg
 }
 
 output "virtual_network" {
