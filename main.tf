@@ -14,9 +14,9 @@ locals {
   resource_group_location        = var.resource_group_location
   network_watcher_resource_group = "NetworkWatcherRG"
   build_agent_subnet_id          = module.backend.build_subnet_id
-  authorized_audit_subnet_ids    = [] # concat(var.authorized_audit_subnet_ids, [ local.build_agent_subnet_id ])
-  authorized_security_subnet_ids = [] # concat(var.authorized_security_subnet_ids, [ local.build_agent_subnet_id ])
-  authorized_persistent_data_subnet_ids     = [] # concat(var.authorized_persistent_data_subnet_ids, [ local.build_agent_subnet_id ])
+  authorized_audit_subnet_ids    = concat(var.authorized_audit_subnet_ids, [ local.build_agent_subnet_id ])
+  authorized_security_subnet_ids = concat(var.authorized_security_subnet_ids, [ local.build_agent_subnet_id ])
+  authorized_persistent_data_subnet_ids     = concat(var.authorized_persistent_data_subnet_ids, [ local.build_agent_subnet_id ])
 }
 
 module "naming" {
