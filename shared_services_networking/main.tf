@@ -3,7 +3,7 @@ provider "azurerm" {
 }
 
 locals {
-  suffix              = concat(["net"], var.suffix)
+  suffix = concat(["net"], var.suffix)
   #The resource_group[0] is needed to index into the azurerm_resource_group because of the count used for conditional instantiation.
   resource_group_name = var.use_existing_resource_group ? var.resource_group_name : azurerm_resource_group.resource_group[0].name
 }
@@ -27,9 +27,9 @@ module "virtual_network" {
 }
 
 module "firewall" {
-  source              = "git::https://github.com/Azure/terraform-azurerm-sec-firewall"
-  resource_group_name = data.azurerm_resource_group.current.name
-  virtual_network     = module.virtual_network.virtual_network
-  suffix              = local.suffix
-  public_ip_sku       = var.firewall_public_ip_sku
+  source             = "git::https://github.com/Azure/terraform-azurerm-sec-firewall"
+  virtual_network    = module.virtual_network.virtual_network
+  firewall_subnet_id = module.virtual_network.firewall_subnet.id
+  suffix             = local.suffix
+  public_ip_sku      = var.firewall_public_ip_sku
 }
