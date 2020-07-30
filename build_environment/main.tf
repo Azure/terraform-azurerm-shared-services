@@ -76,7 +76,7 @@ resource "azurerm_virtual_network" "build" {
   resource_group_name = azurerm_resource_group.backend.name
 }
 
-resource "azurerm_subnet" "internal" {
+resource "azurerm_subnet" "build" {
   name                 = "internal"
   resource_group_name  = azurerm_resource_group.backend.name
   virtual_network_name = azurerm_virtual_network.build.name
@@ -90,7 +90,7 @@ resource "azurerm_network_interface" "build" {
 
   ip_configuration {
     name                          = "build"
-    subnet_id                     = azurerm_subnet.internal.id
+    subnet_id                     = azurerm_subnet.build.id
     private_ip_address_allocation = "Dynamic"
   }
 }
@@ -192,5 +192,5 @@ resource "azurerm_container_registry" "build" {
 ###############################
 
 output "build_subnet_id" {
-  value = azurerm_virtual_network.build.id
+  value = azurerm_subnet.build.id
 }
