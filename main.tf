@@ -14,9 +14,9 @@ locals {
   resource_group_location        = var.resource_group_location
   network_watcher_resource_group = "NetworkWatcherRG"
   build_agent_subnet_id          = module.backend.build_subnet_id
-  authorized_data_subnet_ids     = concat(var.authorized_data_subnet_ids, [ local.build_agent_subnet_id ])
   authorized_audit_subnet_ids    = concat(var.authorized_audit_subnet_ids, [ local.build_agent_subnet_id ])
   authorized_security_subnet_ids = concat(var.authorized_security_subnet_ids, [ local.build_agent_subnet_id ])
+  authorized_persistent_data_subnet_ids     = concat(var.authorized_persistent_data_subnet_ids, [ local.build_agent_subnet_id ])
 }
 
 module "naming" {
@@ -168,7 +168,7 @@ module "persistent_data" {
 
   #TODO: Work out what additional if any allowed ip ranges and permitted virtual network subnets there needs to be.
   allowed_ip_ranges                    = concat([], var.authorized_persistent_data_client_ips)
-  permitted_virtual_network_subnet_ids = concat([module.virtual_network.data_subnet.id], var.authorized_persistent_data_subnet_ids)
+  permitted_virtual_network_subnet_ids = concat([module.virtual_network.data_subnet.id], local.authorized_persistent_data_subnet_ids)
   enable_data_lake_filesystem          = false
   data_lake_filesystem_name            = module.naming.storage_data_lake_gen2_filesystem.name_unique
   bypass_internal_network_rules        = true
