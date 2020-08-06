@@ -5,7 +5,7 @@ provider "azurerm" {
 locals {
   suffix = concat(["net"], var.suffix)
   #The resource_group[0] is needed to index into the azurerm_resource_group because of the count used for conditional instantiation.
-  resource_group_name = var.use_existing_resource_group ? var.resource_group_name : azurerm_resource_group.resource_group[0].name
+  resource_group = var.use_existing_resource_group ? data.azurerm_resource_group.current[0] : azurerm_resource_group.resource_group[0]
 }
 
 module "naming" {
@@ -21,7 +21,7 @@ resource "azurerm_resource_group" "resource_group" {
 
 module "virtual_network" {
   source               = "./virtual_network_sub_module"
-  resource_group       = data.azurerm_resource_group.current
+  resource_group       = local.resource_group
   virtual_network_cidr = var.virtual_network_cidr
   suffix               = local.suffix
 }

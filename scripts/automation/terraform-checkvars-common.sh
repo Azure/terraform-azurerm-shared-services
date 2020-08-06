@@ -1,3 +1,5 @@
+#!/bin/bash
+
 fail=0
 
 if [ -z "${ARM_SUBSCRIPTION_ID}" ]; then
@@ -32,13 +34,6 @@ if [ -z "${ARM_TENANT_ID}" ]; then
   fail=1
 fi
 
-if [ -z "${TF_VAR_virtual_network_cidr}" ]; then
-  echo
-  echo "TF_VAR_virtual_network_cidr not set."
-  echo "Please set to to a valid CIDR e.g. 10.0.0.0/24"
-  fail=1
-fi
-
 if [ -z "${TF_VAR_location}" ]; then
   echo
   echo "TF_VAR_location not set"
@@ -46,6 +41,18 @@ if [ -z "${TF_VAR_location}" ]; then
   fail=1
 fi
 
-if [ "$fail" = 1 ]; then
-  exit 1
+if [ -z "${TF_VAR_environment_id}" ]; then
+  echo
+  echo "TF_VAR_environment_id not set"
+  echo "Please set to a unique 5 character alphanumeric identifier"
+  fail=1
 fi
+
+MIN=3
+MAX=5
+if [[ ! $TF_VAR_environment_id =~ ^[[:alnum:]]{$MIN,$MAX}$ ]]; then
+  echo "ERROR: TF_VAR_environment_id must contain only numbers or letters and be between $MIN and $MAX characters in length"
+  fail=1
+fi
+
+exit $fail

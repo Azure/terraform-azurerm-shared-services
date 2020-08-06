@@ -1,17 +1,15 @@
 stages:
-  - stage: CD
+  - stage: Bootstrap
     jobs:
 
-    - job: CD
-      pool: SharedServices
+    - job: Bootstrap
       workspace:  
         clean: all
-      container:
-        image: ssbuild-dev
-        endpoint: acr-shared-services
       
       steps:
+
         - checkout: self
+
         - task: AzureCLI@2
           name: AzCreds
           displayName: Get Azure Credentials
@@ -27,10 +25,9 @@ stages:
                 AZ_SUB_ID=`az account show -o tsv | awk '{ print $3 }'`
                 echo '##vso[task.setvariable variable=AZ_SUB_ID;isOutput=true]'$AZ_SUB_ID
 
-
-        - bash: ./scripts/automation/shared_services-cd.sh 
+        - bash: ./scripts/automation/bootstrap-cicd.sh
           workingDirectory: .
-          displayName: 'Deploy TF Backend'
+          displayName: 'Bootstrap Build environment'
           env:
             ARM_CLIENT_ID: $(AzCreds.AZ_SPN)
             ARM_CLIENT_SECRET: $(AzCreds.AZ_SPN_KEY)
@@ -38,7 +35,6 @@ stages:
             ARM_TENANT_ID: $(AzCreds.AZ_TENANT)
             TF_VAR_environment_id: $(ENVIRONMENT_ID)
             TF_VAR_location: $(LOCATION)
-            TF_VAR_virtual_network_cidr: $(SUBNET_CIDR)
             TF_VAR_devops_org: $(DEVOPS_ORG)
             TF_VAR_devops_project: $(DEVOPS_PROJECT)
             TF_VAR_devops_pat_token: $(DEVOPS_PAT_TOKEN)

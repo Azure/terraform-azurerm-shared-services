@@ -1,8 +1,11 @@
-set -x
+set -ex
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-$DIR/terraform-checkvars.sh
- 
-export TF_VAR_authorized_security_subnet_ids=$BUILD_AGENT_SUBNET_ID
-$DIR/deploy_remote_backend.sh && $DIR/deploy_shared_services.sh
+$DIR/terraform-checkvars-cd.sh
+
+export TF_VAR_suffix=[\"$TF_VAR_environment_id\"]
+export TF_VAR_resource_group_location=$TF_VAR_location
+
+$DIR/create_backend_config.sh
+terraform init -backend-config=./backend.config && terraform plan && terraform apply -auto-approve
 

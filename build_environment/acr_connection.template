@@ -1,0 +1,43 @@
+{
+  "administratorsGroup": null,
+  "authorization": {
+    "scheme": "ServicePrincipal",
+    "parameters": {
+      "loginServer": "${ACR_HOSTNAME}.azurecr.io",
+      "role": "8311e382-0749-4cb8-b61a-304f252e45ec",
+      "scope": "/subscriptions/${SUBSCRIPTION_ID}/resourceGroups/${RG_NAME}/providers/Microsoft.ContainerRegistry/registries/${ACR_NAME}",
+      "servicePrincipalId": "<placeholder>",
+      "tenantId": "${ARM_TENANT_ID}"
+    }
+  },
+  "createdBy": null,
+  "data": {
+    "appObjectId": "",
+    "azureSpnPermissions": "",
+    "azureSpnRoleAssignmentId": "",
+    "registryId": "/subscriptions/${SUBSCRIPTION_ID}/resourceGroups/${RG_NAME}/providers/Microsoft.ContainerRegistry/registries/${ACR_NAME}",
+    "registrytype": "ACR",
+    "spnObjectId": "",
+    "subscriptionId": "${SUBSCRIPTION_ID}",
+    "subscriptionName": "limorl-tobybrad"
+  },
+  "description": "",
+  "groupScopeId": null,
+  "name": "${ENDPOINT_NAME}",
+  "operationStatus": null,
+  "readersGroup": null,
+  "serviceEndpointProjectReferences": [
+    {
+      "description": "",
+      "name": "${ENDPOINT_NAME}",
+      "projectReference": {
+        "id": "${PROJECT_ID}",
+        "name": "BRIGHTSIDE"
+      }
+    }
+  ],
+  "type": "dockerregistry",
+  "url": "https://${ACR_HOSTNAME}.azurecr.io",
+  "isShared": false,
+  "owner": "library"
+}

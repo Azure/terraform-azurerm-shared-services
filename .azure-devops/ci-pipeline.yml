@@ -1,15 +1,68 @@
-# TODO: Service connection not currently set via a variable due to this
-# unresolved issue: https://github.com/microsoft/azure-pipelines-agent/issues/1307#issuecomment-403194600
+variables:
+- name: DOCKER_REGISTRY_SERVICE_CONNECTION
+  value: acr-shared-services 
+- name: DOCKER_IMAGE_NAME
+  value: ssbuild-dev
 
-stages:
-  - stage: CI
-    jobs:
-    - template: templates/dockerCI.yml
-      parameters:
-        DOCKER_REGISTRY_SERVICE_CONNECTION: brightsideACR
-        DOCKER_REGISTRY_URL: brdev.azurecr.io
-    - template: templates/terraformCI.yml
-      parameters:
-        DOCKER_IMAGE: brightside-dev:latest
-        DOCKER_REGISTRY_SERVICE_CONNECTION: brightsideACR
-      
+jobs:
+
+- job: DockerCI
+
+  pool: SharedServices
+
+  steps:
+  - task: Docker@2
+    displayName: Login to ACR
+    inputs:
+      command: login
+      containerRegistry: acr-shared-services
+
+  - bash: scripts/automation/docker-ci.sh
+    displayName: 'Docker CI'
+    env:
+      DOCKER_REGISTRY_URL: acr$(ENVIRONMENT_ID).azurecr.io
+      DOCKERFILE_PATH: ".devcontainer/Dockerfile"
+      DOCKER_IMAGE_NAME: $(DOCKER_IMAGE_NAME)
+
+
+- job: TerraformCI
+
+  dependsOn: DockerCI
+
+  pool: SharedServices
+
+  container:
+    image: $(DOCKER_IMAGE_NAME)
+    endpoint: acr-shared-services
+
+  steps:
+  - task: AzureCLI@2
+    name: AzCreds
+    displayName: Get Azure Credentials
+    inputs:
+        azureSubscription: rm-shared-services
+        scriptType: bash
+        addSpnToEnvironment: true
+        scriptLocation: inlineScript
+        inlineScript: |
+          echo '##vso[task.setvariable variable=AZ_SPN;isOutput=true]'$servicePrincipalId
+          echo '##vso[task.setvariable variable=AZ_SPN_KEY;isOutput=true]'$servicePrincipalKey
+          echo '##vso[task.setvariable variable=AZ_TENANT;isOutput=true]'$tenantId
+          AZ_SUB_ID=`az account show -o tsv | awk '{ print $3 }'`
+          echo '##vso[task.setvariable variable=AZ_SUB_ID;isOutput=true]'$AZ_SUB_ID
+
+
+  - bash: ./scripts/automation/shared_services-ci.sh
+    workingDirectory: .
+    displayName: 'Terraform CI'
+    env: 
+      ARM_CLIENT_ID: $(AzCreds.AZ_SPN)
+      ARM_CLIENT_SECRET: $(AzCreds.AZ_SPN_KEY)
+      ARM_SUBSCRIPTION_ID: $(AzCreds.AZ_SUB_ID)
+      ARM_TENANT_ID: $(AzCreds.AZ_TENANT)
+      TF_VAR_virtual_network_cidr: $(SHARED_VNET_CIDR)
+      TF_VAR_location: $(LOCATION)
+      TF_VAR_environment_id: $(ENVIRONMENT_ID)
+      TF_VAR_devops_org: $(DEVOPS_ORG)
+      TF_VAR_devops_project: $(DEVOPS_PROJECT)
+      TF_VAR_devops_pat_token: $(DEVOPS_PAT_TOKEN)
