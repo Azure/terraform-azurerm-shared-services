@@ -116,7 +116,7 @@ resource "azurerm_monitor_diagnostic_setting" "secrets_nsg_diagnostic_setting" {
   }
 }
 
-resource "azurerm_monitor_diagnostic_setting" "firewall_diagnostic_setting" {
+/* resource "azurerm_monitor_diagnostic_setting" "firewall_diagnostic_setting" {
   name                       = "setByPolicy"
   target_resource_id         = var.shared_service_firewall.firewall.id
   storage_account_id         = var.shared_service_diag_storage.id
@@ -168,7 +168,7 @@ resource "azurerm_monitor_diagnostic_setting" "firewall_pip_diagnostic_setting" 
       enabled = true
     }
   }
-}
+} */
 
 
 resource "azurerm_network_watcher_flow_log" "network_flow_diagnostics" {

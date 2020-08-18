@@ -29,11 +29,11 @@ variable "resource_group_location" {
   default     = ""
 }
 
-variable "firewall_public_ip_sku" {
+/* variable "firewall_public_ip_sku" {
   type        = string
   description = "The pricing and performance sku to create the Azure Firewalls public IP address to."
   default     = "Standard"
-}
+} */
 
 
 

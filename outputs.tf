@@ -34,9 +34,9 @@ output "net_virtual_network" {
   value = module.virtual_network.virtual_network
 }
 
-output "net_firewall_subnet" {
+/* output "net_firewall_subnet" {
   value = module.virtual_network.firewall_subnet
-}
+} */
 
 output "net_secrets_subnet" {
   value = module.virtual_network.secrets_subnet

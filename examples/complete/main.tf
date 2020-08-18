@@ -43,7 +43,7 @@ module "shared_services" {
   authorized_audit_subnet_ids           = [azurerm_subnet.example_workload_subnet.id]
   authorized_security_client_ips        = [data.external.test_client_ip.result.ip]
   authorized_security_subnet_ids        = [azurerm_subnet.example_workload_subnet.id]
-  firewall_public_ip_sku                = "Standard"
+  #firewall_public_ip_sku                = "Standard"
 }
 
 

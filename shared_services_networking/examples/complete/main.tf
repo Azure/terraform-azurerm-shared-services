@@ -16,7 +16,7 @@ module "virtual_networking" {
   virtual_network_cidr        = "10.0.0.0/20"
   use_existing_resource_group = false
   resource_group_location     = "uksouth"
-  firewall_public_ip_sku      = "Standard"
-  suffix                      = [local.unique_name_stub]
+  #firewall_public_ip_sku      = "Standard"
+  suffix = [local.unique_name_stub]
 }
 

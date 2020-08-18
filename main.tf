@@ -10,13 +10,13 @@ provider "azuredevops" {
 }
 
 locals {
-  suffix                         = concat(["ss"], var.suffix)
-  resource_group_location        = var.resource_group_location
-  network_watcher_resource_group = "NetworkWatcherRG"
-  build_agent_subnet_id          = module.backend.build_subnet_id
-  authorized_audit_subnet_ids    = concat(var.authorized_audit_subnet_ids, [ local.build_agent_subnet_id ])
-  authorized_security_subnet_ids = concat(var.authorized_security_subnet_ids, [ local.build_agent_subnet_id ])
-  authorized_persistent_data_subnet_ids     = concat(var.authorized_persistent_data_subnet_ids, [ local.build_agent_subnet_id ])
+  suffix                                = concat(["ss"], var.suffix)
+  resource_group_location               = var.resource_group_location
+  network_watcher_resource_group        = "NetworkWatcherRG"
+  build_agent_subnet_id                 = module.backend.build_subnet_id
+  authorized_audit_subnet_ids           = concat(var.authorized_audit_subnet_ids, [local.build_agent_subnet_id])
+  authorized_security_subnet_ids        = concat(var.authorized_security_subnet_ids, [local.build_agent_subnet_id])
+  authorized_persistent_data_subnet_ids = concat(var.authorized_persistent_data_subnet_ids, [local.build_agent_subnet_id])
 }
 
 module "naming" {
@@ -40,7 +40,7 @@ module "virtual_network" {
   use_existing_resource_group = var.use_existing_resource_group
   resource_group_name         = var.resource_group_name
   resource_group_location     = local.resource_group_location
-  firewall_public_ip_sku      = var.firewall_public_ip_sku
+  #firewall_public_ip_sku      = var.firewall_public_ip_sku
 }
 
 module "virtual_network_diagnostic_settings" {
@@ -51,10 +51,10 @@ module "virtual_network_diagnostic_settings" {
   shared_service_data_nsg                 = module.virtual_network.data_subnet_network_security_group
   shared_service_audit_nsg                = module.virtual_network.audit_subnet_network_security_group
   shared_service_secrets_nsg              = module.virtual_network.secrets_subnet_network_security_group
-  shared_service_firewall                 = module.virtual_network.firewall
-  shared_service_diag_storage             = module.audit_diagnostics_package.storage_account
-  shared_service_diag_log_analytics       = module.audit_diagnostics_package.log_analytics_workspace
-  shared_service_log_retention_duration   = var.log_retention_duration
+  #shared_service_firewall                 = module.virtual_network.firewall
+  shared_service_diag_storage           = module.audit_diagnostics_package.storage_account
+  shared_service_diag_log_analytics     = module.audit_diagnostics_package.log_analytics_workspace
+  shared_service_log_retention_duration = var.log_retention_duration
 }
 
 module "virtual_networking_policy" {
