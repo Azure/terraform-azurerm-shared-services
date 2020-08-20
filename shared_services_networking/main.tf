@@ -26,10 +26,13 @@ module "virtual_network" {
   suffix               = local.suffix
 }
 
-module "firewall" {
+#NOTE: An Azure Firewall has an associated monthly cost irrespective of whether or not it is being actively used. Current usecase does not require the firewall
+# to be in place.  
+
+/* module "firewall" {
   source             = "git::https://github.com/Azure/terraform-azurerm-sec-firewall"
   virtual_network    = module.virtual_network.virtual_network
   firewall_subnet_id = module.virtual_network.firewall_subnet.id
   suffix             = local.suffix
   public_ip_sku      = var.firewall_public_ip_sku
-}
+} */

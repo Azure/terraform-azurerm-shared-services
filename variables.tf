@@ -87,11 +87,11 @@ variable "authorized_security_subnet_ids" {
   default     = []
 }
 
-variable "firewall_public_ip_sku" {
+/* variable "firewall_public_ip_sku" {
   type        = string
   description = "The pricing and performance sku to create the Azure Firewalls public IP address to."
   default     = "Standard"
-}
+} */
 
 
 

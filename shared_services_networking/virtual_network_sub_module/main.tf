@@ -18,14 +18,6 @@ resource "azurerm_virtual_network" "virtual_network" {
   address_space       = [var.virtual_network_cidr]
 }
 
-resource "azurerm_subnet" "firewall_subnet" {
-  name                 = "AzureFirewallSubnet"
-  resource_group_name  = var.resource_group.name
-  virtual_network_name = azurerm_virtual_network.virtual_network.name
-  address_prefixes     = [cidrsubnet(var.virtual_network_cidr, 3, 0)]
-  service_endpoints    = ["Microsoft.Storage"]
-}
-
 ///////////////////////////////////
 // Secrets Subnet
 ///////////////////////////////////
@@ -39,7 +31,7 @@ resource "azurerm_subnet" "secrets_subnet" {
   name                                           = join(module.secrets_subnet_naming.subnet.dashes ? "-" : "", [module.secrets_subnet_naming.subnet.name, "secrets"])
   resource_group_name                            = var.resource_group.name
   virtual_network_name                           = azurerm_virtual_network.virtual_network.name
-  address_prefixes                               = [cidrsubnet(var.virtual_network_cidr, 3, 1)]
+  address_prefixes                               = [cidrsubnet(var.virtual_network_cidr, 3, 0)]
   service_endpoints                              = ["Microsoft.KeyVault", "Microsoft.Storage"]
   enforce_private_link_endpoint_network_policies = true
 }
@@ -68,7 +60,7 @@ resource "azurerm_subnet" "audit_subnet" {
   name                                           = join(module.audit_subnet_naming.subnet.dashes ? "-" : "", [module.audit_subnet_naming.subnet.name, "audit"])
   resource_group_name                            = var.resource_group.name
   virtual_network_name                           = azurerm_virtual_network.virtual_network.name
-  address_prefixes                               = [cidrsubnet(var.virtual_network_cidr, 3, 2)]
+  address_prefixes                               = [cidrsubnet(var.virtual_network_cidr, 3, 1)]
   service_endpoints                              = ["Microsoft.EventHub", "Microsoft.Storage"]
   enforce_private_link_endpoint_network_policies = true
 }
@@ -97,7 +89,7 @@ resource "azurerm_subnet" "data_subnet" {
   name                                           = join(module.data_subnet_naming.subnet.dashes ? "-" : "", [module.data_subnet_naming.subnet.name, "data"])
   resource_group_name                            = var.resource_group.name
   virtual_network_name                           = azurerm_virtual_network.virtual_network.name
-  address_prefixes                               = [cidrsubnet(var.virtual_network_cidr, 3, 3)]
+  address_prefixes                               = [cidrsubnet(var.virtual_network_cidr, 3, 2)]
   service_endpoints                              = ["Microsoft.Storage", "Microsoft.KeyVault", "Microsoft.AzureActiveDirectory"]
   enforce_private_link_endpoint_network_policies = true
 }
@@ -112,3 +104,15 @@ resource "azurerm_subnet_network_security_group_association" "data_nsg_asso" {
   subnet_id                 = azurerm_subnet.data_subnet.id
   network_security_group_id = azurerm_network_security_group.data_nsg.id
 }
+
+///////////////////////////////////
+// Firewall Subnet
+///////////////////////////////////
+
+/* resource "azurerm_subnet" "firewall_subnet" {
+  name                 = "AzureFirewallSubnet"
+  resource_group_name  = var.resource_group.name
+  virtual_network_name = azurerm_virtual_network.virtual_network.name
+  address_prefixes     = [cidrsubnet(var.virtual_network_cidr, 3, 3)]
+  service_endpoints    = ["Microsoft.Storage"]
+} */
