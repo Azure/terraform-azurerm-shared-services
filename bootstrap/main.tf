@@ -43,10 +43,10 @@ provider "azuredevops" {
 ###############################################################
 
 module "backend" {
-  source = "../build_environment"
-  org = var.devops_org
-  project = var.devops_project
-  pat_token = var.devops_pat_token
+  source         = "../build_environment"
+  org            = var.devops_org
+  project        = var.devops_project
+  pat_token      = var.devops_pat_token
   environment_id = var.environment_id
-  location = var.location
+  location       = var.location
 }
