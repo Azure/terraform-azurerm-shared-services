@@ -11,13 +11,6 @@ module "network_security_group_rules" {
   source = "git::https://github.com/Azure/terraform-azurerm-sec-network-security-group-rules"
 }
 
-resource "azurerm_virtual_network" "virtual_network" {
-  name                = module.naming.virtual_network.name
-  location            = var.resource_group.location
-  resource_group_name = var.resource_group.name
-  address_space       = [var.virtual_network_cidr]
-}
-
 ///////////////////////////////////
 // Secrets Subnet
 ///////////////////////////////////

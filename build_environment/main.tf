@@ -1,39 +1,4 @@
 ##########################
-# Inputs
-##########################
-
-variable "environment_id" {
-  type        = string
-  description = "The globally unique root identifier for this set of resources."
-}
-
-variable "location" {
-  type        = string
-  description = "The Azure region into which these resources will be deployed e.g. 'uksouth'."
-}
-
-variable "org" {
-  type        = string
-  description = "The name of the devops org into which the build agent will be installed e.g. https://dev.azure.com/myDevOrg"
-}
-
-variable "project" {
-  type        = string
-  description = "The name of the pre-existing ADO project to which the build agent will be attached"
-}
-
-variable "pat_token" {
-  type        = string
-  description = "PAT token with 'Owner' level access. Create this token via https://dev.azure.com/<ORG>/_usersSettings/tokens"
-}
-
-variable "agent_pool" {
-  type        = string
-  description = "Name of an agent pool that will be created within the ADO project"
-  default     = "SharedServices"
-}
-
-##########################
 # Backend Storage Account
 ##########################
 
@@ -69,19 +34,12 @@ resource "azuredevops_agent_pool" "build" {
 # Build Agent
 ##########################
 
-resource "azurerm_virtual_network" "build" {
-  name                = "build-network"
-  address_space       = ["10.0.0.0/16"]
-  location            = azurerm_resource_group.backend.location
-  resource_group_name = azurerm_resource_group.backend.name
-}
-
 resource "azurerm_subnet" "build" {
   name                 = "internal"
-  resource_group_name  = azurerm_resource_group.backend.name
-  virtual_network_name = azurerm_virtual_network.build.name
+  resource_group_name  = var.virtual_network_resource_group_name
+  virtual_network_name = var.virtual_network_name
   address_prefixes     = ["10.0.2.0/24"]
-  service_endpoints    = [ "Microsoft.Storage", "Microsoft.KeyVault" ]
+  service_endpoints    = ["Microsoft.Storage", "Microsoft.KeyVault"]
 }
 
 resource "azurerm_network_interface" "build" {
@@ -103,7 +61,7 @@ resource "azurerm_virtual_machine" "build" {
   network_interface_ids = [azurerm_network_interface.build.id]
   vm_size               = "Standard_DS1_v2"
 
-  delete_os_disk_on_termination = true
+  delete_os_disk_on_termination    = true
   delete_data_disks_on_termination = true
 
   storage_image_reference {
@@ -121,16 +79,16 @@ resource "azurerm_virtual_machine" "build" {
   }
 
   os_profile {
-    computer_name   = "${var.environment_id}-build-agent"
-    admin_username  = "buildadmin"
-    admin_password  = "Kubla1Khan;"
+    computer_name  = "${var.environment_id}-build-agent"
+    admin_username = "buildadmin"
+    admin_password = "Kubla1Khan;"
   }
 
   os_profile_linux_config {
     disable_password_authentication = false
   }
 
-  depends_on        = [ azuredevops_agent_pool.build ]
+  depends_on = [azuredevops_agent_pool.build]
 }
 
 ######################################
@@ -147,51 +105,39 @@ resource "azurerm_virtual_machine_extension" "build" {
   settings = <<SCRIPT
     {
         "script": "${base64encode(templatefile("${path.module}/agent_installer.sh", {
-          ORG="${var.org}",
-          PAT="${var.pat_token}",
-          NAME=azurerm_virtual_machine.build.name,
-          POOL="${var.agent_pool}"
-        }))}"
+  ORG  = "${var.org}",
+  PAT  = "${var.pat_token}",
+  NAME = azurerm_virtual_machine.build.name,
+  POOL = "${var.agent_pool}"
+}))}"
     }
 SCRIPT
 
-  tags = {
-    environment = "Build"
-  }
+tags = {
+  environment = "Build"
+}
 }
 
 ###############################
 # ACR
 ###############################
 
-data "azuredevops_project" "devops_project" {
-  project_name          = var.project
-}
-
 resource "azurerm_container_registry" "build" {
-  name                     = "ACR${var.environment_id}"
-  resource_group_name      = azurerm_resource_group.backend.name
-  location                 = azurerm_resource_group.backend.location
-  sku                      = "Basic"
-  admin_enabled            = false
+  name                = "ACR${var.environment_id}"
+  resource_group_name = azurerm_resource_group.backend.name
+  location            = azurerm_resource_group.backend.location
+  sku                 = "Basic"
+  admin_enabled       = false
 
   provisioner "local-exec" {
-    command = "./create_acr_connection.sh"
+    command     = "./create_acr_connection.sh"
     working_dir = path.module
   }
 
   provisioner "local-exec" {
-    when    = destroy
-    command = "./destroy_acr_connection.sh"
+    when        = destroy
+    command     = "./destroy_acr_connection.sh"
     working_dir = path.module
   }
 }
 
-
-###############################
-# Outputs
-###############################
-
-output "build_subnet_id" {
-  value = azurerm_subnet.build.id
-}

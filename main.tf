@@ -3,17 +3,11 @@ provider "azurerm" {
   features {}
 }
 
-provider "azuredevops" {
-  version               = ">= 0.0.1"
-  org_service_url       = var.devops_org
-  personal_access_token = var.devops_pat_token
-}
-
 locals {
   suffix                                = concat(["ss"], var.suffix)
   resource_group_location               = var.resource_group_location
   network_watcher_resource_group        = "NetworkWatcherRG"
-  build_agent_subnet_id                 = module.backend.build_subnet_id
+  build_agent_subnet_id                 = data.build_agent_subnet.id
   authorized_audit_subnet_ids           = concat(var.authorized_audit_subnet_ids, [local.build_agent_subnet_id])
   authorized_security_subnet_ids        = concat(var.authorized_security_subnet_ids, [local.build_agent_subnet_id])
   authorized_persistent_data_subnet_ids = concat(var.authorized_persistent_data_subnet_ids, [local.build_agent_subnet_id])
@@ -22,15 +16,6 @@ locals {
 module "naming" {
   source = "git::https://github.com/Azure/terraform-azurerm-naming"
   suffix = local.suffix
-}
-
-module "backend" {
-  source         = "./build_environment"
-  environment_id = join("", var.suffix)
-  org            = var.devops_org
-  project        = var.devops_project
-  pat_token      = var.devops_pat_token
-  location       = local.resource_group_location
 }
 
 module "virtual_network" {
@@ -51,10 +36,10 @@ module "virtual_network_diagnostic_settings" {
   shared_service_data_nsg                 = module.virtual_network.data_subnet_network_security_group
   shared_service_audit_nsg                = module.virtual_network.audit_subnet_network_security_group
   shared_service_secrets_nsg              = module.virtual_network.secrets_subnet_network_security_group
+  shared_service_diag_storage             = module.audit_diagnostics_package.storage_account
+  shared_service_diag_log_analytics       = module.audit_diagnostics_package.log_analytics_workspace
+  shared_service_log_retention_duration   = var.log_retention_duration
   #shared_service_firewall                 = module.virtual_network.firewall
-  shared_service_diag_storage           = module.audit_diagnostics_package.storage_account
-  shared_service_diag_log_analytics     = module.audit_diagnostics_package.log_analytics_workspace
-  shared_service_log_retention_duration = var.log_retention_duration
 }
 
 module "virtual_networking_policy" {
