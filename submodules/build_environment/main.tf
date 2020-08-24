@@ -1,5 +1,5 @@
 locals {
-  suffix = concat(["ss", "dev"], var.suffix)
+  suffix = concat(["dev", "ss"], var.suffix)
 }
 
 module "naming" {
