@@ -17,7 +17,7 @@ locals {
 
 module "naming" {
   source = "git::https://github.com/Azure/terraform-azurerm-naming"
-  suffix = [local.suffix]
+  suffix = local.suffix
 }
 
 resource "azurerm_resource_group" "vnet_resource_group" {

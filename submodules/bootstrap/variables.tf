@@ -38,7 +38,6 @@ variable "azure_devops_pat" {
 variable "suffix" {
   type        = string
   description = "A naming suffix to be used in the creation of unique names for Azure resources."
-  default     = []
 }
 
 variable "use_existing_resource_group" {
