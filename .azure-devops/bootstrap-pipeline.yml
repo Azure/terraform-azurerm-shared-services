@@ -40,3 +40,4 @@ stages:
             TF_VAR_azure_devops_pat: $(DEVOPS_PAT_TOKEN)
             TF_VAR_build_agent_admin_username: $(BUILD_ADMIN_USERNAME)
             TF_VAR_build_agent_admin_password: $(BUILD_ADMIN_PASSWORD)
+            TF_VAR_virtual_network_cidr: $(VNET_ADDRESS_SPACE)
