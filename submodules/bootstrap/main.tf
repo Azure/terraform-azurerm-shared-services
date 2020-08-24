@@ -10,7 +10,7 @@ provider "azuredevops" {
 }
 
 locals {
-  suffix = concat(["-", "net", "ss", var.suffix])
+  suffix = join(["-", "net", "ss", var.suffix])
   #The vnet_resource_group[0] is needed to index into the azurerm_resource_group because of the count used for conditional instantiation.
   resource_group = var.use_existing_resource_group ? data.azurerm_resource_group.current[0] : azurerm_resource_group.vnet_resource_group[0]
 }
