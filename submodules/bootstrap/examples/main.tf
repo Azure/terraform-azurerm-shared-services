@@ -1,12 +1,3 @@
-#NOTE: SET THESE ENV VARS MANUALLY BEFORE RUNNING THIS EXAMPLE OTHERWISE THE SAMPLE SCRIPTS WILL FAIL 
-
-#export TF_VAR_environment_id=
-#export TF_VAR_devops_pat_token=
-#export TF_VAR_devops_org=
-#export TF_VAR_devops_project=
-#export ARM_SUBSCRIPTION_ID= 
-#export ARM_TENANT_ID= 
-
 provider "azurerm" {
   version = "~>2.0"
   features {}
