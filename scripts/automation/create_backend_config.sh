@@ -6,8 +6,8 @@ terraform {
 }
 EOF
 
-RG_NAME=backend-${TF_VAR_suffix}
-SA_NAME=${TF_VAR_suffix}
+RG_NAME=rg-dev-ss-${TF_VAR_suffix}
+SA_NAME=sadevss-${TF_VAR_suffix}
 CT_NAME="terraform-tfstate"
 az login --service-principal --username $ARM_CLIENT_ID --password $ARM_CLIENT_SECRET --tenant $ARM_TENANT_ID
 SA_KEY=$(az storage account keys list --resource-group $RG_NAME --account-name $SA_NAME --query "[0].value")

@@ -44,7 +44,7 @@ resource "azurerm_subnet_network_security_group_association" "build_nsg_asso" {
 ##########################
 
 resource "azurerm_storage_account" "backend_state" {
-  name                      = module.naming.storage_account.name_unique
+  name                      = join("", ["sadevss", var.suffix])
   resource_group_name       = azurerm_resource_group.backend.name
   location                  = azurerm_resource_group.backend.location
   account_kind              = "StorageV2"
