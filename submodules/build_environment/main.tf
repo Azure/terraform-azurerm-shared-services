@@ -1,5 +1,5 @@
 locals {
-  suffix = concat(["ss"], var.suffix)
+  suffix = concat(["ss", "dev"], var.suffix)
 }
 
 module "naming" {
@@ -11,9 +11,8 @@ module "naming" {
 # Backend Resource Group
 ##########################
 
-
 resource "azurerm_resource_group" "backend" {
-  name     = "${module.naming.resource_group.slug}-priv-build-${join("-", local.suffix)}"
+  name     = "${module.naming.resource_group.slug}-${join("-", local.suffix)}"
   location = var.resource_group_location
 }
 
@@ -22,42 +21,52 @@ resource "azurerm_resource_group" "backend" {
 ##########################
 
 resource "azurerm_subnet" "build" {
-  name                 = join(module.naming.subnet.dashes ? "-" : "", [module.naming.subnet.name, "private", "build"])
+  name                 = join(module.naming.subnet.dashes ? "-" : "", [module.naming.subnet.name])
   resource_group_name  = var.virtual_network_resource_group_name
   virtual_network_name = var.virtual_network_name
   address_prefixes     = [cidrsubnet(var.virtual_network_cidr, 4, 0)]
   service_endpoints    = ["Microsoft.Storage", "Microsoft.KeyVault"]
 }
 
-resource "azurerm_network_security_group" "secrets_nsg" {
-  name                = module.naming.network_security_group.name_unique
-  location            = var.resource_group.location
-  resource_group_name = var.resource_group.name
+resource "azurerm_network_security_group" "build_nsg" {
+  name                = join(module.naming.network_security_group.dashes ? "-" : "", [module.naming.subnet.name])
+  location            = azurerm_resource_group.backend.location
+  resource_group_name = azurerm_resource_group.backend.name
 }
 
-resource "azurerm_subnet_network_security_group_association" "secrets_nsg_asso" {
-  subnet_id                 = azurerm_subnet.secrets_subnet.id
-  network_security_group_id = azurerm_network_security_group.secrets_nsg.id
+resource "azurerm_subnet_network_security_group_association" "build_nsg_asso" {
+  subnet_id                 = azurerm_subnet.build.id
+  network_security_group_id = azurerm_network_security_group.build_nsg.id
 }
 
 ##########################
 # Backend Storage Account
 ##########################
 
-module "backend_state" {
-  source                           = "git::https://github.com/Azure/terraform-azurerm-sec-storage-account"
-  resource_group_name              = azurerm_resource_group.backend.name
-  resource_group_location          = azurerm_resource_group.backend.location
-  storage_account_name             = join("", ["state", module.naming.storage_account.name_unique])
-  storage_account_tier             = "Standard"
-  storage_account_replication_type = "LRS"
-  bypass_internal_network_rules    = true
+resource "azurerm_storage_account" "backend_state" {
+  name                      = module.naming.storage_account.name_unique
+  resource_group_name       = azurerm_resource_group.backend.name
+  location                  = azurerm_resource_group.backend.location
+  account_kind              = "StorageV2"
+  account_tier              = "Standard"
+  account_replication_type  = "LRS"
+  enable_https_traffic_only = true
+  allow_blob_public_access  = false
 }
 
 resource "azurerm_storage_container" "backend_state_container" {
-  name                 = "terraform-tfstate"
-  storage_account_name = module.backend_state.name
+  name                  = "terraform-tfstate"
+  storage_account_name  = azurerm_storage_account.backend_state.name
+  container_access_type = "private"
 }
+
+resource "azurerm_storage_account_network_rules" "backend_state_network_rule" {
+  resource_group_name  = azurerm_resource_group.backend.name
+  storage_account_name = azurerm_storage_account.backend_state.name
+  default_action       = "Deny"
+  bypass               = ["Metrics", "Logging", "AzureServices"]
+}
+
 
 ##########################
 # Build Agent Pool
@@ -73,19 +82,19 @@ resource "azuredevops_agent_pool" "build_agent_pool" {
 ##########################
 
 resource "azurerm_network_interface" "build_agent_nic" {
-  name                = "${module.naming.network_interface.slug}-build-agent-${join("-", local.suffix)}"
+  name                = "${module.naming.network_interface.slug}-${join("-", local.suffix)}"
   location            = azurerm_resource_group.backend.location
   resource_group_name = azurerm_resource_group.backend.name
 
   ip_configuration {
-    name                          = "${module.naming.network_interface.slug}-build-agent-${join("-", local.suffix)}"
+    name                          = "${module.naming.network_interface.slug}-${join("-", local.suffix)}"
     subnet_id                     = azurerm_subnet.build.id
     private_ip_address_allocation = "Dynamic"
   }
 }
 
 resource "azurerm_virtual_machine" "build_agent" {
-  name                  = "${module.naming.virtual_machine.slug}-build-agent-${join("-", local.suffix)}"
+  name                  = "${module.naming.virtual_machine.slug}-${join("-", local.suffix)}"
   location              = azurerm_resource_group.backend.location
   resource_group_name   = azurerm_resource_group.backend.name
   network_interface_ids = [azurerm_network_interface.build_agent_nic.id]
@@ -102,7 +111,7 @@ resource "azurerm_virtual_machine" "build_agent" {
   }
 
   storage_os_disk {
-    name              = "osdisk"
+    name              = "osdisk-${join("-", local.suffix)}"
     caching           = "ReadWrite"
     create_option     = "FromImage"
     managed_disk_type = "Standard_LRS"
@@ -153,7 +162,7 @@ tags = {
 ###########################################
 
 resource "azurerm_container_registry" "devcontainer_container_registry" {
-  name                = "${module.naming.container_registry.slug}-dev-cont-${join("-", local.suffix)}"
+  name                = "${module.naming.container_registry.slug}${join("", local.suffix)}"
   resource_group_name = azurerm_resource_group.backend.name
   location            = azurerm_resource_group.backend.location
   sku                 = "Basic"

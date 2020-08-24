@@ -19,6 +19,6 @@ sed \
 -e "s/\${ARM_TENANT_ID}/$ARM_TENANT_ID/" \
 -e "s/\${ENDPOINT_NAME}/$CONNECTION_NAME/" \
 -e "s/\${PROJECT_ID}/$PROJECT_ID/" \
-acr_connection.template > service_connection.json
+./scripts/acr_connection.template > service_connection.json
 
 az devops service-endpoint create --service-endpoint-configuration service_connection.json --organization $TF_VAR_devops_org --project $TF_VAR_devops_project
