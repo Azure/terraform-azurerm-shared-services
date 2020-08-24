@@ -10,14 +10,14 @@ provider "azuredevops" {
 }
 
 locals {
-  suffix = concat(["net", "ss"], var.suffix)
+  suffix = concat(["-", "net", "ss", var.suffix])
   #The vnet_resource_group[0] is needed to index into the azurerm_resource_group because of the count used for conditional instantiation.
   resource_group = var.use_existing_resource_group ? data.azurerm_resource_group.current[0] : azurerm_resource_group.vnet_resource_group[0]
 }
 
 module "naming" {
   source = "git::https://github.com/Azure/terraform-azurerm-naming"
-  suffix = local.suffix
+  suffix = [local.suffix]
 }
 
 resource "azurerm_resource_group" "vnet_resource_group" {
@@ -44,5 +44,5 @@ module "private_build_environment" {
   azure_devops_organisation           = var.azure_devops_organisation
   azure_devops_project                = var.azure_devops_project
   azure_devops_pat                    = var.azure_devops_pat
-  suffix                              = var.suffix
+  suffix                              = [var.suffix]
 }

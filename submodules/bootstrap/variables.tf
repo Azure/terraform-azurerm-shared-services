@@ -36,7 +36,7 @@ variable "azure_devops_pat" {
 
 #Optional Variables
 variable "suffix" {
-  type        = list(string)
+  type        = string
   description = "A naming suffix to be used in the creation of unique names for Azure resources."
   default     = []
 }
