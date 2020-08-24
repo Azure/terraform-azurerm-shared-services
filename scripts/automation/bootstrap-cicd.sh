@@ -19,8 +19,8 @@ $DIR/terraform-checkvars-bootstrap.sh
 
 # Apply the initial boostrapping TF, local state
 #
-rm -f bootstrap/backend.tf
-terraform init bootstrap && terraform plan bootstrap && terraform apply -auto-approve bootstrap
+rm -f submodules/bootstrap/backend.tf
+terraform init submodules/bootstrap && terraform plan submodules/bootstrap && terraform apply -auto-approve submodules/bootstrap
 
 # Move bootstrap to the module it becomes in root and then re-init with remote backend
 

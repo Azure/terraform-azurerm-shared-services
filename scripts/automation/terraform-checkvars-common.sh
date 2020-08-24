@@ -34,24 +34,24 @@ if [ -z "${ARM_TENANT_ID}" ]; then
   fail=1
 fi
 
-if [ -z "${TF_VAR_location}" ]; then
+if [ -z "${TF_VAR_resource_group_location}" ]; then
   echo
-  echo "TF_VAR_location not set"
+  echo "TF_VAR_resource_group_location not set"
   echo "Please set to a valid Azure region e.g. uksouth"
   fail=1
 fi
 
-if [ -z "${TF_VAR_environment_id}" ]; then
+if [ -z "${TF_VAR_suffix}" ]; then
   echo
-  echo "TF_VAR_environment_id not set"
+  echo "TF_VAR_suffix not set"
   echo "Please set to a unique 5 character alphanumeric identifier"
   fail=1
 fi
 
 MIN=3
 MAX=5
-if [[ ! $TF_VAR_environment_id =~ ^[[:alnum:]]{$MIN,$MAX}$ ]]; then
-  echo "ERROR: TF_VAR_environment_id must contain only numbers or letters and be between $MIN and $MAX characters in length"
+if [[ ! $TF_VAR_suffix =~ ^[[:alnum:]]{$MIN,$MAX}$ ]]; then
+  echo "ERROR: TF_VAR_suffix must contain only numbers or letters and be between $MIN and $MAX characters in length"
   fail=1
 fi
 
