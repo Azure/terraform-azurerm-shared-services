@@ -2,10 +2,16 @@ provider "azurerm" {
   features {}
 }
 
+locals {
+  suffix         = var.suffix
+  resource_group = data.azurerm_resource_group.virtual_network_resource_group
+}
+
 module "virtual_network" {
-  source               = "./virtual_network_sub_module"
-  resource_group       = 
-  virtual_network_cidr = var.virtual_network_cidr
+  source               = "./virtual_network_subnets"
+  virtual_network_cidr = data.azurerm_virtual_network.virtual_network.address_space
+  virtual_network_name = var.virtual_network_name
+  resource_group       = local.resource_group
   suffix               = local.suffix
 }
 

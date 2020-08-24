@@ -7,10 +7,10 @@ locals {
   suffix                                = concat(["ss"], var.suffix)
   resource_group_location               = var.resource_group_location
   network_watcher_resource_group        = "NetworkWatcherRG"
-  build_agent_subnet_id                 = data.build_agent_subnet.id
-  authorized_audit_subnet_ids           = concat(var.authorized_audit_subnet_ids, [local.build_agent_subnet_id])
-  authorized_security_subnet_ids        = concat(var.authorized_security_subnet_ids, [local.build_agent_subnet_id])
-  authorized_persistent_data_subnet_ids = concat(var.authorized_persistent_data_subnet_ids, [local.build_agent_subnet_id])
+  private_build_agent_subnet_id         = module.virtual_network.private_build_agent_subnet.id
+  authorized_audit_subnet_ids           = concat(var.authorized_audit_subnet_ids, [local.private_build_agent_subnet_id])
+  authorized_security_subnet_ids        = concat(var.authorized_security_subnet_ids, [local.private_build_agent_subnet_id])
+  authorized_persistent_data_subnet_ids = concat(var.authorized_persistent_data_subnet_ids, [local.private_build_agent_subnet_id])
 }
 
 module "naming" {
@@ -18,18 +18,20 @@ module "naming" {
   suffix = local.suffix
 }
 
+///////////////////////////////////
+// Shared Service Networking
+///////////////////////////////////
+
 module "virtual_network" {
-  source                      = "./shared_services_networking"
-  virtual_network_cidr        = var.virtual_network_cidr
-  suffix                      = local.suffix
-  use_existing_resource_group = var.use_existing_resource_group
-  resource_group_name         = var.resource_group_name
-  resource_group_location     = local.resource_group_location
+  source                              = "./submodules/virtual_networking"
+  virtual_network_name                = var.shared_services_virtual_network_name
+  virtual_network_resource_group_name = var.shared_services_virtual_network_resource_group_name
+  suffix                              = local.suffix
   #firewall_public_ip_sku      = var.firewall_public_ip_sku
 }
 
 module "virtual_network_diagnostic_settings" {
-  source                                  = "./diagnostic_settings_submodule/virtual_network"
+  source                                  = "./submodules/diagnostic_settings/virtual_network"
   shared_service_virtual_network          = module.virtual_network.virtual_network
   shared_service_network_watcher_location = local.resource_group_location
   shared_service_subnet_nsg_ids           = module.virtual_network.nsg_ids
@@ -43,12 +45,16 @@ module "virtual_network_diagnostic_settings" {
 }
 
 module "virtual_networking_policy" {
-  source                     = "./policy_assignment"
+  source                     = "./submodules/policy_assignment"
   target_resource_group      = module.virtual_network.resource_group
   log_retention_days         = var.log_retention_duration
   log_analytics_workspace_id = module.audit_diagnostics_package.log_analytics_workspace.name
   log_storage_account_name   = module.audit_diagnostics_package.storage_account.name
 }
+
+///////////////////////////////////
+// Shared Service Diagnostics
+///////////////////////////////////
 
 module "audit_diagnostics_package" {
   source                                     = "git::https://github.com/Azure/terraform-azurerm-sec-audit-diagnostics-package"
@@ -89,7 +95,7 @@ module "audit_diagnostics_package" {
 }
 
 module "audit_diagnostic_settings" {
-  source                                = "./diagnostic_settings_submodule/audit_diagnostics"
+  source                                = "./submodules/diagnostic_settings/audit_diagnostics"
   shared_service_eventhub_namespace     = module.audit_diagnostics_package.event_hub_namespace
   shared_service_automation_account     = module.audit_diagnostics_package.automation_account
   shared_service_diag_storage           = module.audit_diagnostics_package.storage_account
@@ -98,12 +104,16 @@ module "audit_diagnostic_settings" {
 }
 
 module "audit_diagnostics_policy" {
-  source                     = "./policy_assignment"
+  source                     = "./submodules/policy_assignment"
   target_resource_group      = module.audit_diagnostics_package.resource_group
   log_retention_days         = var.log_retention_duration
   log_analytics_workspace_id = module.audit_diagnostics_package.log_analytics_workspace.name
   log_storage_account_name   = module.audit_diagnostics_package.storage_account.name
 }
+
+///////////////////////////////////
+// Shared Service Security
+///////////////////////////////////
 
 module "security_package" {
   source                               = "git::https://github.com/Azure/terraform-azurerm-sec-security-package"
@@ -123,7 +133,7 @@ module "security_package" {
 }
 
 module "security_diagnostic_settings" {
-  source                                = "./diagnostic_settings_submodule/security"
+  source                                = "./submodules/diagnostic_settings/security"
   shared_service_key_vault              = module.security_package.key_vault
   shared_service_diag_storage           = module.audit_diagnostics_package.storage_account
   shared_service_diag_log_analytics     = module.audit_diagnostics_package.log_analytics_workspace
@@ -131,12 +141,16 @@ module "security_diagnostic_settings" {
 }
 
 module "security_policy" {
-  source                     = "./policy_assignment"
+  source                     = "./submodules/policy_assignment"
   target_resource_group      = module.security_package.resource_group
   log_retention_days         = var.log_retention_duration
   log_analytics_workspace_id = module.audit_diagnostics_package.log_analytics_workspace.name
   log_storage_account_name   = module.audit_diagnostics_package.storage_account.name
 }
+
+///////////////////////////////////
+// Shared Service Persistent Data
+///////////////////////////////////
 
 resource "azurerm_resource_group" "persistent_data" {
   name     = "${module.naming.resource_group.slug}-data-${join("-", local.suffix)}"
@@ -159,12 +173,6 @@ module "persistent_data" {
   bypass_internal_network_rules        = true
 }
 
-resource "azurerm_storage_container" "private_container" {
-  name                  = "private-container"
-  storage_account_name  = module.persistent_data.storage_account.name
-  container_access_type = "private"
-}
-
 #TODO: Check for key standard i.e key bit length and preferred crypto algorithm
 module "persistent_data_managed_encryption_key" {
   source                 = "git::https://github.com/Azure/terraform-azurerm-sec-storage-managed-encryption-key"
@@ -175,7 +183,7 @@ module "persistent_data_managed_encryption_key" {
 }
 
 module "data_policy" {
-  source                     = "./policy_assignment"
+  source                     = "./submodules/policy_assignment"
   target_resource_group      = azurerm_resource_group.persistent_data
   log_retention_days         = var.log_retention_duration
   log_analytics_workspace_id = module.audit_diagnostics_package.log_analytics_workspace.name

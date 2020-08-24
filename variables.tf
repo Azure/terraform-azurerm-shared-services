@@ -1,23 +1,12 @@
 #Required Variables
-
-variable "devops_org" {
+variable "shared_services_virtual_network_name" {
   type        = string
-  description = "The name of the devops org into which the build agent will be installed e.g. https://dev.azure.com/myDevOrg"
+  description = "The name of the bootstrapped Shared Services virtual network to use."
 }
 
-variable "devops_project" {
+variable "shared_services_virtual_network_resource_group_name" {
   type        = string
-  description = "The name of the pre-existing ADO project to which the build agent will be attached"
-}
-
-variable "devops_pat_token" {
-  type        = string
-  description = "PAT token with permission to manage build agent pools. Create this token via https://dev.azure.com/DevCrew-UK-2/_usersSettings/tokens, needs 'Agent Pools (Read & Manage) permissions"
-}
-
-variable "virtual_network_cidr" {
-  type        = string
-  description = "A string CIDR address space for the Shared Services virtual network to be deployed to."
+  description = "The name of the bootstrapped Azure Resource Group that the Shared Services virtual network has been deployed to."
 }
 
 #Optional Variables
@@ -69,12 +58,6 @@ variable "authorized_persistent_data_client_ips" {
   default     = []
 }
 
-variable "authorized_persistent_data_subnet_ids" {
-  type        = list(string)
-  description = "A list of Azure Subnet ids of the subnets that are allowed to directly access the Shared Servicess persistent data subnet."
-  default     = []
-}
-
 variable "authorized_security_client_ips" {
   type        = list(string)
   description = "A list of IP addresses of the clients or endpoints athorised to directly access the Shared Servicess KeyVault."
@@ -84,6 +67,12 @@ variable "authorized_security_client_ips" {
 variable "authorized_security_subnet_ids" {
   type        = list(string)
   description = "A list of Azure Subnet ids of the subnets that are allowed to directly access the Shared Servicess security subnet."
+  default     = []
+}
+
+variable "authorized_persistent_data_subnet_ids" {
+  type        = list(string)
+  description = "A list of Azure Subnet ids of the subnets that are allowed to directly access the Shared Servicess persistent data subnet."
   default     = []
 }
 

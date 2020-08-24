@@ -1,11 +1,16 @@
 #Required Variables
 variable "virtual_network_cidr" {
-  type        = string
+  type        = list(string)
   description = "A string CIDR address to create the Virtual Network to."
 }
 
+variable "virtual_network_name" {
+  type        = string
+  description = "The name of the bootstrapped Shared Services virtual network to use."
+}
+
 variable "resource_group" {
-  type = any
+  type        = any
   description = "The Resource Group object which the Shared Services Virtual Network will be provisioned to."
 }
 
