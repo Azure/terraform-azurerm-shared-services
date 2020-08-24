@@ -143,7 +143,7 @@ resource "azurerm_virtual_machine_extension" "build_agent_extension" {
 
   settings = <<SCRIPT
     {
-        "script": "${base64encode(templatefile("${path.module}/scripts/agent_installer.sh", {
+        "script": "${base64encode(templatefile("${path.module}/agent_installer.sh", {
   ORG  = "${var.azure_devops_organisation}",
   PAT  = "${var.azure_devops_pat}",
   NAME = azurerm_virtual_machine.build_agent.name,
@@ -169,13 +169,13 @@ resource "azurerm_container_registry" "devcontainer_container_registry" {
   admin_enabled       = false
 
   provisioner "local-exec" {
-    command     = "./scripts/create_acr_connection.sh"
+    command     = "./create_acr_connection.sh"
     working_dir = path.module
   }
 
   provisioner "local-exec" {
     when        = destroy
-    command     = "./scripts/destroy_acr_connection.sh"
+    command     = "./destroy_acr_connection.sh"
     working_dir = path.module
   }
 }
