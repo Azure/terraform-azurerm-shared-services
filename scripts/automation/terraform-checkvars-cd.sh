@@ -7,10 +7,20 @@ $DIR/terraform-checkvars-common.sh
 
 fail=$?
 
-if [ -z "${TF_VAR_virtual_network_cidr}" ]; then
+if [ -z "${SHARED_SERVICES_VNET_NAME}" ]; then
   echo
-  echo "TF_VAR_virtual_network_cidr not set."
-  echo "Please set to to a valid CIDR e.g. 10.0.0.0/24"
+  echo "TF_VAR_shared_services_virtual_network_name not set."
+  echo "Please set to the name of the Shared Services Virtual Network deployed by bootstrap."
+  echo "It should take the form vnet-net-ss-${SUFFIX}."
+  fail=1
+fi
+
+if [ -z "${SHARED_SERVICES_RESOURCE_GROUP_NAME}" ]; then
+  echo
+  echo "TF_VAR_shared_services_virtual_network_resource_group_name not set."
+  echo "Please set to the name of the Shared Services Resource Group where the" 
+  echo "Virtual Network was to deployed by bootstrap."
+  echo "It should take the form rg-net-ss-${SUFFIX}."
   fail=1
 fi
 
