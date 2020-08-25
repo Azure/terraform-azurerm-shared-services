@@ -44,7 +44,7 @@ resource "azurerm_subnet_network_security_group_association" "build_nsg_asso" {
 ##########################
 
 resource "azurerm_storage_account" "backend_state" {
-  name                      = join("", ["sadevss", var.suffix])
+  name                      = join("", concat(["sadevss"], var.suffix))
   resource_group_name       = azurerm_resource_group.backend.name
   location                  = azurerm_resource_group.backend.location
   account_kind              = "StorageV2"
@@ -59,14 +59,6 @@ resource "azurerm_storage_container" "backend_state_container" {
   storage_account_name  = azurerm_storage_account.backend_state.name
   container_access_type = "private"
 }
-
-resource "azurerm_storage_account_network_rules" "backend_state_network_rule" {
-  resource_group_name  = azurerm_resource_group.backend.name
-  storage_account_name = azurerm_storage_account.backend_state.name
-  default_action       = "Deny"
-  bypass               = ["Metrics", "Logging", "AzureServices"]
-}
-
 
 ##########################
 # Build Agent Pool
