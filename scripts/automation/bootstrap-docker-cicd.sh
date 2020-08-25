@@ -7,7 +7,7 @@ docker build -f .devcontainer/Dockerfile -t ssdev .
 
 # Run bootstrap in devcontainer
 docker run -v `pwd`:/ss \
--w /ss
+-w /ss \
 -e TF_VAR_suffix="$TF_VAR_suffix" \
 -e TF_VAR_resource_group_location="$TF_VAR_resource_group_location" \
 -e TF_VAR_virtual_network_cidr="$TF_VAR_virtual_network_cidr" \
@@ -20,4 +20,4 @@ docker run -v `pwd`:/ss \
 -e ARM_CLIENT_SECRET="$ARM_CLIENT_SECRET" \
 -e ARM_SUBSCRIPTION_ID="$ARM_SUBSCRIPTION_ID" \
 -e ARM_TENANT_ID="$ARM_TENANT_ID" \
-ssdev ./scripts/automation/bootstrap-cicd.sh
+ssdev /bin/bash ./scripts/automation/bootstrap-cicd.sh
