@@ -8,7 +8,7 @@ data "azurerm_virtual_network" "virtual_network" {
 }
 
 data "azurerm_subnet" "private_build_agent_subnet" {
-  name                 = join("-", concat(["snet-dev"], var.suffix))
+  name                 = join("", ["snet-dev", "-", local.suffix])
   virtual_network_name = data.azurerm_virtual_network.virtual_network.name
   resource_group_name  = var.virtual_network_resource_group_name
 }

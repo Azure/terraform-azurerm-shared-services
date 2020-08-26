@@ -4,6 +4,12 @@ variable "virtual_network_name" {
   description = "The name of the bootstrapped Shared Services virtual network to use."
 }
 
+variable "virtual_network_resource_group_location" {
+  type        = string
+  description = "The location of the bootstrapped Azure Resource Group that the Shared Services virtual network has been deployed to."
+}
+
+
 variable "virtual_network_resource_group_name" {
   type        = string
   description = "The name of the bootstrapped Azure Resource Group that the Shared Services virtual network has been deployed to."

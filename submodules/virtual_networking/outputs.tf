@@ -1,5 +1,5 @@
 output "resource_group" {
-  value = local.resource_group
+  value = data.azurerm_resource_group.virtual_network_resource_group
 }
 
 output "virtual_network" {
@@ -11,38 +11,38 @@ output "private_build_agent_subnet" {
 }
 
 output "secrets_subnet" {
-  value = module.virtual_network.secrets_subnet
+  value = azurerm_subnet.secrets_subnet
 }
 
 output "audit_subnet" {
-  value = module.virtual_network.audit_subnet
+  value = azurerm_subnet.audit_subnet
 }
 
 output "data_subnet" {
-  value = module.virtual_network.data_subnet
+  value = azurerm_subnet.data_subnet
 }
 
 /*output "firewall_subnet" {
-  value = module.virtual_network.firewall_subnet
+  value = azurerm_subnet.firewall_subnet
 }*/
 
 output "data_subnet_network_security_group" {
-  value = module.virtual_network.data_subnet_network_security_group
+  value = azurerm_network_security_group.data_nsg
 }
 
 output "secrets_subnet_network_security_group" {
-  value = module.virtual_network.secrets_subnet_network_security_group
+  value = azurerm_network_security_group.secrets_nsg
 }
 
 output "audit_subnet_network_security_group" {
-  value = module.virtual_network.audit_subnet_network_security_group
+  value = azurerm_network_security_group.audit_nsg
 }
 
 output "nsg_ids" {
   value = {
-    "data_nsg"    = module.virtual_network.data_subnet_network_security_group.id
-    "secrets_nsg" = module.virtual_network.secrets_subnet_network_security_group.id
-    "audit_nsg"   = module.virtual_network.audit_subnet_network_security_group.id
+    "data_nsg"    = azurerm_network_security_group.data_nsg.id
+    "secrets_nsg" = azurerm_network_security_group.secrets_nsg.id
+    "audit_nsg"   = azurerm_network_security_group.audit_nsg.id
   }
 }
 
