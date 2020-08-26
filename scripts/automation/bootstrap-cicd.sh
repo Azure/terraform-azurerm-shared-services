@@ -12,24 +12,23 @@
 #
 ######################################################################################
 
-set -ex
+set -e
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 $DIR/terraform-checkvars-bootstrap.sh
 
-# Apply the initial boostrapping TF, local state
-#
+# Remove existing backend terraform file if exists
 rm -f submodules/bootstrap/backend.tf
-terraform init submodules/bootstrap && terraform plan submodules/bootstrap && terraform apply -auto-approve submodules/bootstrap
 
-# Move bootstrap to the module it becomes in root and then re-init with remote backend
+# Apply the initial boostrapping terraform using a local state store
+terraform init submodules/bootstrap
+terraform plan submodules/bootstrap
+terraform apply -auto-approve submodules/bootstrap
 
-#resources=$(terraform state list)
+# Create a remote terraform backend configuration file from the 
+# deployed resources to store the bootstrap state
+$DIR/create_backend_config.sh "bootstrap/terraform.tfstate"
 
-#for resource in $resources
-#do
-#  terraform state mv $resource module.backend.$resource
-#done
-
-$DIR/create_backend_config.sh
+# Reinitialize the bootstrap terraform using 
+# the new backend to persiste state remotely
 terraform init -backend-config=./backend.config -force-copy
