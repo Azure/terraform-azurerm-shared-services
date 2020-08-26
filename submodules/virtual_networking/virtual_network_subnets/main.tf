@@ -54,7 +54,7 @@ resource "azurerm_subnet" "audit_subnet" {
   resource_group_name                            = var.resource_group.name
   virtual_network_name                           = var.virtual_network_name
   address_prefixes                               = [cidrsubnet(var.virtual_network_cidr[0], 4, 2)]
-  service_endpoints                              = ["Microsoft.EventHub", "Microsoft.Storage"]
+  service_endpoints                              = ["Microsoft.EventHub", "Microsoft.Storage", "Microsoft.KeyVault"]
   enforce_private_link_endpoint_network_policies = true
 }
 
