@@ -29,6 +29,7 @@ resource "azurerm_policy_assignment" "official_assignment" {
   display_name         = local.official_policy_display_name
   location             = var.target_resource_group.location
 
+  #Specifying a system assigned identity here due to this policy having create if not exists effect policies. 
   identity {
     type = "SystemAssigned"
   }

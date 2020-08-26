@@ -29,7 +29,7 @@ resource "azurerm_subnet" "build" {
 }
 
 resource "azurerm_network_security_group" "build_nsg" {
-  name                = join(module.naming.network_security_group.dashes ? "-" : "", [module.naming.subnet.name])
+  name                = join(module.naming.network_security_group.dashes ? "-" : "", [module.naming.network_security_group.name])
   location            = azurerm_resource_group.backend.location
   resource_group_name = var.virtual_network_resource_group_name
 }
