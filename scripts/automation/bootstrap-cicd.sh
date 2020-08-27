@@ -17,18 +17,30 @@ set -e
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 $DIR/terraform-checkvars-bootstrap.sh
 
-# Remove existing backend terraform file if exists
-rm -f submodules/bootstrap/backend.tf
+# Source lib
+. "$DIR/backend_config.sh"
 
-# Apply the initial boostrapping terraform using a local state store
-terraform init submodules/bootstrap
-terraform plan submodules/bootstrap
-terraform apply -auto-approve submodules/bootstrap
+# Azure login
+az_login
 
-# Create a remote terraform backend configuration file from the 
-# deployed resources to store the bootstrap state
-$DIR/create_backend_config.sh "bootstrap/terraform.tfstate"
+# Ensure backend terraform file
+ensure_terraform_azure_backend_config_file submodules/bootstrap/backend.tf
 
-# Reinitialize the bootstrap terraform using 
-# the new backend to persiste state remotely
-terraform init -backend-config=./backend.config -force-copy
+BOOTSTRAP_TFSTATE_NAME="bootstrap/terraform.tfstate"
+if [ check_backend_config_exists_in_azure ]; then
+    # Ensure backend.config file for existing azure backend
+    rm -f backend.config
+    create_backend_config "$BOOTSTRAP_TFSTATE_NAME" > backend.config
+    # Init and apply using existing azure backend to update resources
+    terraform init -backend-config=./backend.config submodules/bootstrap
+    terraform apply -auto-approve submodules/bootstrap
+else
+    # Init and apply using a local state backend to create azure resources
+    terraform init submodules/bootstrap
+    terraform apply -auto-approve submodules/bootstrap
+    # Ensure backend.config file for newly deployed azure resources
+    rm -f backend.config
+    create_backend_config "$BOOTSTRAP_TFSTATE_NAME" > backend.config
+    # Reinitialize terraform to copy local state to new azure backend
+    terraform init -backend-config=./backend.config -force-copy
+fi

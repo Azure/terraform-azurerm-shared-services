@@ -3,8 +3,11 @@ set -e
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 $DIR/terraform-checkvars-cd.sh
 
+# Source lib
+. "$DIR/backend_config.sh"
+
 # Create a terraform backend configuration file to store the shared services state
-$DIR/create_backend_config.sh
+create_backend_config "terraform.tfstate" > backend.config
 
 # Mangle env vars into the correct format for terraform and export
 export TF_VAR_suffix=[\"$TF_VAR_suffix\"]
