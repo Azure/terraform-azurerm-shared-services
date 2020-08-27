@@ -160,6 +160,10 @@ resource "azurerm_container_registry" "devcontainer_container_registry" {
   sku                 = "Basic"
   admin_enabled       = false
 
+  /* There is an approach to automatically creating the Docker Registery Service Connection however currently 
+  this doesnt grant permission to all pipelines. Commenting this out to avoid the creation of a broken service 
+  connection 
+
   provisioner "local-exec" {
     command     = "./create_acr_connection.sh"
     working_dir = path.module
@@ -170,5 +174,6 @@ resource "azurerm_container_registry" "devcontainer_container_registry" {
     command     = "./destroy_acr_connection.sh"
     working_dir = path.module
   }
+  */
 }
 
