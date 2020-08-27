@@ -54,10 +54,16 @@ function check_backend_config_exists_in_azure {
 #   TF_VAR_suffix
 # Arguments:
 #   The terraform state file key
+#   The terraform backend config file location
 #######################################
 function create_backend_config {
     if [ -z "$1" ]; then echo "$0: Argument 1 missing"; exit 1; fi
+    if [ -z "$2" ]; then echo "$0: Argument 2 missing"; exit 1; fi
 
+    # Create the azurerm terraform config file
+    ensure_terraform_azure_backend_config_file "$2"
+
+    # Output a terraform backend config file
     RG_NAME=rg-dev-ss-${TF_VAR_suffix}
     SA_NAME=sadevss${TF_VAR_suffix}
     CT_NAME="terraform-tfstate"
