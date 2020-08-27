@@ -27,7 +27,7 @@ az_login
 ensure_terraform_azure_backend_config_file submodules/bootstrap/backend.tf
 
 BOOTSTRAP_TFSTATE_NAME="bootstrap/terraform.tfstate"
-if [ check_backend_config_exists_in_azure ]; then
+if check_backend_config_exists_in_azure; then
     # Ensure backend.config file for existing azure backend
     rm -f backend.config
     create_backend_config "$BOOTSTRAP_TFSTATE_NAME" > backend.config
