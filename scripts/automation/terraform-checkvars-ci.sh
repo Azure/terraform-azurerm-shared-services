@@ -15,7 +15,7 @@ if [ -z "${SHARED_SERVICES_VNET_NAME}" ]; then
   fail=1
 fi
 
-if [ -z "${SHARED_SERVICES_RESOURCE_GROUP_NAME}" ]; then
+if [ -z "${SHARED_SERVICES_VNET_RESOURCE_GROUP_NAME}" ]; then
   echo
   echo "TF_VAR_shared_services_virtual_network_resource_group_name not set."
   echo "Please set to the name of the Shared Services Resource Group where the" 

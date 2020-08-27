@@ -4,7 +4,7 @@
 # - SUFFIX
 # - RESOURCE_GROUP_LOCATION
 # - SHARED_SERVICES_VNET_NAME
-# - SHARED_SERVICES_RESOURCE_GROUP_NAME
+# - SHARED_SERVICES_VNET_RESOURCE_GROUP_NAME
 
 trigger: none
 
@@ -73,5 +73,5 @@ jobs:
       TF_VAR_suffix: $(SUFFIX)
       TF_VAR_resource_group_location: $(RESOURCE_GROUP_LOCATION)
       TF_VAR_shared_services_virtual_network_name: $(SHARED_SERVICES_VNET_NAME) 
-      TF_VAR_shared_services_virtual_network_resource_group_name: $(SHARED_SERVICES_RESOURCE_GROUP_NAME)
+      TF_VAR_shared_services_virtual_network_resource_group_name: $(SHARED_SERVICES_VNET_RESOURCE_GROUP_NAME)
       
