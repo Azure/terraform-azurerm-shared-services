@@ -7,6 +7,11 @@ module "naming" {
   suffix = local.suffix
 }
 
+locals {
+  cis_policy_display_name      = "CIS Microsoft Azure Foundations Benchmark 1.1.0"
+  official_policy_display_name = "UK OFFICIAL and UK NHS"
+}
+
 ##########################
 # Backend Resource Group
 ##########################
@@ -16,12 +21,34 @@ resource "azurerm_resource_group" "backend" {
   location = var.resource_group_location
 }
 
+resource "azurerm_policy_assignment" "cis_assignment" {
+  name                 = local.cis_policy_display_name
+  scope                = azurerm_resource_group.backend.id
+  policy_definition_id = data.azurerm_policy_set_definition.cis_set_definition.id
+  description          = data.azurerm_policy_set_definition.cis_set_definition.description
+  display_name         = local.cis_policy_display_name
+}
+
+resource "azurerm_policy_assignment" "official_assignment" {
+  name                 = local.official_policy_display_name
+  scope                = azurerm_resource_group.backend.id
+  policy_definition_id = data.azurerm_policy_set_definition.official_set_definition.id
+  description          = data.azurerm_policy_set_definition.official_set_definition.description
+  display_name         = local.official_policy_display_name
+  location             = azurerm_resource_group.backend.location
+
+  #Specifying a system assigned identity here due to this policy having create if not exists effect policies. 
+  identity {
+    type = "SystemAssigned"
+  }
+}
+
 ##########################
 # Backend Networking
 ##########################
 
 resource "azurerm_subnet" "build" {
-  name                 = join(module.naming.subnet.dashes ? "-" : "", [module.naming.subnet.name])
+  name                 = join(module.naming.subnet.dashes ? "-" : "", [module.naming.subnet.slug, "dev", local.suffix])
   resource_group_name  = var.virtual_network_resource_group_name
   virtual_network_name = var.virtual_network_name
   address_prefixes     = [cidrsubnet(var.virtual_network_cidr, 4, 0)]
@@ -29,7 +56,7 @@ resource "azurerm_subnet" "build" {
 }
 
 resource "azurerm_network_security_group" "build_nsg" {
-  name                = join(module.naming.network_security_group.dashes ? "-" : "", [module.naming.network_security_group.name])
+  name                = join(module.naming.network_security_group.dashes ? "-" : "", [module.naming.network_security_group.slug, "dev", local.suffix])
   location            = azurerm_resource_group.backend.location
   resource_group_name = var.virtual_network_resource_group_name
 }
