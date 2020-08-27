@@ -1,18 +1,14 @@
 output "resource_group" {
-  value = local.resource_group
+  value = module.virtual_network.resource_group
 }
 
 output "virtual_network" {
   value = module.virtual_network.virtual_network
 }
 
-/* output "firewall" {
-  value = module.firewall
+output "private_build_agent_subnet" {
+  value = module.virtual_network.private_build_agent_subnet
 }
-
-output "firewall_subnet" {
-  value = module.virtual_network.firewall_subnet
-} */
 
 output "secrets_subnet" {
   value = module.virtual_network.secrets_subnet
@@ -25,6 +21,10 @@ output "audit_subnet" {
 output "data_subnet" {
   value = module.virtual_network.data_subnet
 }
+
+/*output "firewall_subnet" {
+  value = module.virtual_network.firewall_subnet
+}*/
 
 output "data_subnet_network_security_group" {
   value = module.virtual_network.data_subnet_network_security_group
@@ -45,3 +45,11 @@ output "nsg_ids" {
     "audit_nsg"   = module.virtual_network.audit_subnet_network_security_group.id
   }
 }
+
+/* output "firewall" {
+  value = module.firewall
+}
+*/
+
+
+

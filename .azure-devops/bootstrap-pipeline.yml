@@ -1,3 +1,17 @@
+#
+# Required Pipeline Variables:
+#
+# - SUFFIX
+# - RESOURCE_GROUP_LOCATION
+# - AZURE_DEVOPS_ORGANISATION
+# - AZURE_DEVOPS_PROJECT
+# - AZURE_DEVOPS_PAT
+# - BUILD_ADMIN_USERNAME
+# - BUILD_ADMIN_PASSWORD
+# - VNET_ADDRESS_SPACE
+
+trigger: none
+
 stages:
   - stage: Bootstrap
     jobs:
@@ -25,7 +39,7 @@ stages:
                 AZ_SUB_ID=`az account show -o tsv | awk '{ print $3 }'`
                 echo '##vso[task.setvariable variable=AZ_SUB_ID;isOutput=true]'$AZ_SUB_ID
 
-        - bash: ./scripts/automation/bootstrap-cicd.sh
+        - bash: ./scripts/automation/bootstrap-docker-cicd.sh
           workingDirectory: .
           displayName: 'Bootstrap Build environment'
           env:
@@ -33,8 +47,11 @@ stages:
             ARM_CLIENT_SECRET: $(AzCreds.AZ_SPN_KEY)
             ARM_SUBSCRIPTION_ID: $(AzCreds.AZ_SUB_ID)
             ARM_TENANT_ID: $(AzCreds.AZ_TENANT)
-            TF_VAR_environment_id: $(ENVIRONMENT_ID)
-            TF_VAR_location: $(LOCATION)
-            TF_VAR_devops_org: $(DEVOPS_ORG)
-            TF_VAR_devops_project: $(DEVOPS_PROJECT)
-            TF_VAR_devops_pat_token: $(DEVOPS_PAT_TOKEN)
+            TF_VAR_suffix: $(SUFFIX)
+            TF_VAR_resource_group_location: $(RESOURCE_GROUP_LOCATION)
+            TF_VAR_azure_devops_organisation: $(AZURE_DEVOPS_ORGANISATION)
+            TF_VAR_azure_devops_project: $(AZURE_DEVOPS_PROJECT)
+            TF_VAR_azure_devops_pat: $(AZURE_DEVOPS_PAT)
+            TF_VAR_build_agent_admin_username: $(BUILD_ADMIN_USERNAME)
+            TF_VAR_build_agent_admin_password: $(BUILD_ADMIN_PASSWORD)
+            TF_VAR_virtual_network_cidr: $(VNET_ADDRESS_SPACE)

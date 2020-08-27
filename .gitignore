@@ -22,3 +22,7 @@ terraform\.tfstate\.backup
 .vscode/*
 
 backend.config
+temp.txt
+submodules/bootstrap/examples/main.tf
+setupenv.sh
+submodules/bootstrap/examples/main.tf

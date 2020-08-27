@@ -58,6 +58,9 @@ RUN apt-get update \
     && apt-get update \
     && apt-get install -y azure-cli \
     #
+    # Install Azure DevOps Azure CLI extension
+    && az extension add --name azure-devops \
+    #
     # Install Terraform, tflint, and graphviz
     && mkdir -p /tmp/docker-downloads \
     && curl -sSL -o /tmp/docker-downloads/terraform.zip https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip \

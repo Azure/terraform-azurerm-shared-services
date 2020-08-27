@@ -3,11 +3,11 @@
   "authorization": {
     "scheme": "ServicePrincipal",
     "parameters": {
-      "loginServer": "${ACR_HOSTNAME}.azurecr.io",
+      "loginServer": "acrluked.azurecr.io",
       "role": "8311e382-0749-4cb8-b61a-304f252e45ec",
-      "scope": "/subscriptions/${SUBSCRIPTION_ID}/resourceGroups/${RG_NAME}/providers/Microsoft.ContainerRegistry/registries/${ACR_NAME}",
+      "scope": "/subscriptions/d4bf2856-9a60-4ce4-b41f-423833662915/resourceGroups/backend-luked/providers/Microsoft.ContainerRegistry/registries/ACRluked",
       "servicePrincipalId": "<placeholder>",
-      "tenantId": "${ARM_TENANT_ID}"
+      "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47"
     }
   },
   "createdBy": null,
@@ -15,29 +15,29 @@
     "appObjectId": "",
     "azureSpnPermissions": "",
     "azureSpnRoleAssignmentId": "",
-    "registryId": "/subscriptions/${SUBSCRIPTION_ID}/resourceGroups/${RG_NAME}/providers/Microsoft.ContainerRegistry/registries/${ACR_NAME}",
+    "registryId": "/subscriptions/d4bf2856-9a60-4ce4-b41f-423833662915/resourceGroups/backend-luked/providers/Microsoft.ContainerRegistry/registries/ACRluked",
     "registrytype": "ACR",
     "spnObjectId": "",
-    "subscriptionId": "${SUBSCRIPTION_ID}",
+    "subscriptionId": "d4bf2856-9a60-4ce4-b41f-423833662915",
     "subscriptionName": "limorl-tobybrad"
   },
   "description": "",
   "groupScopeId": null,
-  "name": "${ENDPOINT_NAME}",
+  "name": "acr-shared-services",
   "operationStatus": null,
   "readersGroup": null,
   "serviceEndpointProjectReferences": [
     {
       "description": "",
-      "name": "${ENDPOINT_NAME}",
+      "name": "acr-shared-services",
       "projectReference": {
-        "id": "${PROJECT_ID}",
+        "id": "fbc45c24-d978-4a07-918f-e1262ccc1006",
         "name": "BRIGHTSIDE"
       }
     }
   ],
   "type": "dockerregistry",
-  "url": "https://${ACR_HOSTNAME}.azurecr.io",
+  "url": "https://acrluked.azurecr.io",
   "isShared": false,
   "owner": "library"
 }
