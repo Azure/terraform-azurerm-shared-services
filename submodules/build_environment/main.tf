@@ -1,13 +1,13 @@
 locals {
-  suffix_array = concat(["dev", "ss"], var.suffix)
-  suffix = join("-", local.suffix_array)
+  suffix_array                 = concat(["dev", "ss"], var.suffix)
+  suffix                       = join("-", local.suffix_array)
   cis_policy_display_name      = "CIS Microsoft Azure Foundations Benchmark 1.1.0"
   official_policy_display_name = "UK OFFICIAL and UK NHS"
 }
 
 module "naming" {
   source = "git::https://github.com/Azure/terraform-azurerm-naming"
-  suffix = local.suffix
+  suffix = local.suffix_array
 }
 
 ##########################
@@ -46,7 +46,7 @@ resource "azurerm_policy_assignment" "official_assignment" {
 ##########################
 
 resource "azurerm_subnet" "build" {
-  name                 = join(module.naming.subnet.dashes ? "-" : "", [module.naming.subnet.slug, "dev", local.suffix])
+  name                 = "${module.naming.subnet.slug}-${local.suffix}"
   resource_group_name  = var.virtual_network_resource_group_name
   virtual_network_name = var.virtual_network_name
   address_prefixes     = [cidrsubnet(var.virtual_network_cidr, 4, 0)]
@@ -54,7 +54,7 @@ resource "azurerm_subnet" "build" {
 }
 
 resource "azurerm_network_security_group" "build_nsg" {
-  name                = join(module.naming.network_security_group.dashes ? "-" : "", [module.naming.network_security_group.slug, "dev", local.suffix]))
+  name                = "${module.naming.network_security_group.slug}-${local.suffix}"
   location            = azurerm_resource_group.backend.location
   resource_group_name = var.virtual_network_resource_group_name
 }
@@ -69,7 +69,7 @@ resource "azurerm_subnet_network_security_group_association" "build_nsg_asso" {
 ##########################
 
 resource "azurerm_storage_account" "backend_state" {
-  name                      = join("", concat(["sadevss"], local.suffix_array))
+  name                      = join("", concat(["sa"], local.suffix_array))
   resource_group_name       = azurerm_resource_group.backend.name
   location                  = azurerm_resource_group.backend.location
   account_kind              = "StorageV2"
@@ -179,7 +179,7 @@ tags = {
 ###########################################
 
 resource "azurerm_container_registry" "devcontainer_container_registry" {
-  name                = "${module.naming.container_registry.slug}${local.suffix}"
+  name                = "${module.naming.container_registry.slug}${join("", local.suffix_array)}"
   resource_group_name = azurerm_resource_group.backend.name
   location            = azurerm_resource_group.backend.location
   sku                 = "Basic"
