@@ -190,3 +190,15 @@ module "data_policy" {
   log_analytics_workspace_id = module.audit_diagnostics_package.log_analytics_workspace.name
   log_storage_account_name   = module.audit_diagnostics_package.storage_account.name
 }
+
+///////////////////////////////////
+// Shared Service Dev
+///////////////////////////////////
+
+module "security_diagnostic_settings" {
+  source                                = "./submodules/diagnostic_settings/dev_build_agent"
+  suffix                                = local.suffix
+  shared_service_diag_storage           = module.audit_diagnostics_package.storage_account
+  shared_service_diag_log_analytics     = module.audit_diagnostics_package.log_analytics_workspace
+  shared_service_log_retention_duration = var.log_retention_duration
+}
