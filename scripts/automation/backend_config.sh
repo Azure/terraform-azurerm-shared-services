@@ -41,8 +41,11 @@ function az_login {
 function check_backend_config_exists_in_azure {
     RG_NAME=rg-dev-ss-${TF_VAR_suffix}
     SA_NAME=sadevss${TF_VAR_suffix}
-    az storage account keys list --resource-group $RG_NAME --account-name $SA_NAME --query "[0].value" 2>&1 > /dev/null
-    return "$?"
+    set +e # disable exit on error
+    az storage account keys list --resource-group $RG_NAME --account-name $SA_NAME --query "[0].value" > /dev/null 2>&1
+    STATUS="$?"
+    set -e # enable exit on error
+    return $STATUS
 }
 
 #######################################
