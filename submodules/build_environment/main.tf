@@ -48,7 +48,7 @@ resource "azurerm_policy_assignment" "official_assignment" {
 ##########################
 
 resource "azurerm_subnet" "build" {
-  name                 = join(module.naming.subnet.dashes ? "-" : "", [module.naming.subnet.slug, "dev", local.suffix])
+  name                 = join(module.naming.subnet.dashes ? "-" : "", [module.naming.subnet.slug, "dev", join("", local.suffix)])
   resource_group_name  = var.virtual_network_resource_group_name
   virtual_network_name = var.virtual_network_name
   address_prefixes     = [cidrsubnet(var.virtual_network_cidr, 4, 0)]
@@ -56,7 +56,7 @@ resource "azurerm_subnet" "build" {
 }
 
 resource "azurerm_network_security_group" "build_nsg" {
-  name                = join(module.naming.network_security_group.dashes ? "-" : "", [module.naming.network_security_group.slug, "dev", local.suffix])
+  name                = join(module.naming.network_security_group.dashes ? "-" : "", [module.naming.network_security_group.slug, "dev", join("", local.suffix]))
   location            = azurerm_resource_group.backend.location
   resource_group_name = var.virtual_network_resource_group_name
 }
