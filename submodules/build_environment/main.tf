@@ -1,5 +1,8 @@
 locals {
-  suffix = concat(["dev", "ss"], var.suffix)
+  suffix_array = concat(["dev", "ss"], var.suffix)
+  suffix = join("-", local.suffix_array)
+  cis_policy_display_name      = "CIS Microsoft Azure Foundations Benchmark 1.1.0"
+  official_policy_display_name = "UK OFFICIAL and UK NHS"
 }
 
 module "naming" {
@@ -7,17 +10,12 @@ module "naming" {
   suffix = local.suffix
 }
 
-locals {
-  cis_policy_display_name      = "CIS Microsoft Azure Foundations Benchmark 1.1.0"
-  official_policy_display_name = "UK OFFICIAL and UK NHS"
-}
-
 ##########################
 # Backend Resource Group
 ##########################
 
 resource "azurerm_resource_group" "backend" {
-  name     = "${module.naming.resource_group.slug}-${join("-", local.suffix)}"
+  name     = "${module.naming.resource_group.slug}-${local.suffix}"
   location = var.resource_group_location
 }
 
@@ -48,7 +46,7 @@ resource "azurerm_policy_assignment" "official_assignment" {
 ##########################
 
 resource "azurerm_subnet" "build" {
-  name                 = join(module.naming.subnet.dashes ? "-" : "", [module.naming.subnet.slug, "dev", join("", local.suffix)])
+  name                 = join(module.naming.subnet.dashes ? "-" : "", [module.naming.subnet.slug, "dev", local.suffix])
   resource_group_name  = var.virtual_network_resource_group_name
   virtual_network_name = var.virtual_network_name
   address_prefixes     = [cidrsubnet(var.virtual_network_cidr, 4, 0)]
@@ -56,7 +54,7 @@ resource "azurerm_subnet" "build" {
 }
 
 resource "azurerm_network_security_group" "build_nsg" {
-  name                = join(module.naming.network_security_group.dashes ? "-" : "", [module.naming.network_security_group.slug, "dev", join("", local.suffix]))
+  name                = join(module.naming.network_security_group.dashes ? "-" : "", [module.naming.network_security_group.slug, "dev", local.suffix]))
   location            = azurerm_resource_group.backend.location
   resource_group_name = var.virtual_network_resource_group_name
 }
@@ -71,7 +69,7 @@ resource "azurerm_subnet_network_security_group_association" "build_nsg_asso" {
 ##########################
 
 resource "azurerm_storage_account" "backend_state" {
-  name                      = join("", concat(["sadevss"], var.suffix))
+  name                      = join("", concat(["sadevss"], local.suffix_array))
   resource_group_name       = azurerm_resource_group.backend.name
   location                  = azurerm_resource_group.backend.location
   account_kind              = "StorageV2"
@@ -101,19 +99,19 @@ resource "azuredevops_agent_pool" "build_agent_pool" {
 ##########################
 
 resource "azurerm_network_interface" "build_agent_nic" {
-  name                = "${module.naming.network_interface.slug}-${join("-", local.suffix)}"
+  name                = "${module.naming.network_interface.slug}-${local.suffix}"
   location            = azurerm_resource_group.backend.location
   resource_group_name = azurerm_resource_group.backend.name
 
   ip_configuration {
-    name                          = "${module.naming.network_interface.slug}-${join("-", local.suffix)}"
+    name                          = "${module.naming.network_interface.slug}-${local.suffix}"
     subnet_id                     = azurerm_subnet.build.id
     private_ip_address_allocation = "Dynamic"
   }
 }
 
 resource "azurerm_virtual_machine" "build_agent" {
-  name                  = "${module.naming.virtual_machine.slug}-${join("-", local.suffix)}"
+  name                  = "${module.naming.virtual_machine.slug}-${local.suffix}"
   location              = azurerm_resource_group.backend.location
   resource_group_name   = azurerm_resource_group.backend.name
   network_interface_ids = [azurerm_network_interface.build_agent_nic.id]
@@ -130,14 +128,14 @@ resource "azurerm_virtual_machine" "build_agent" {
   }
 
   storage_os_disk {
-    name              = "osdisk-${join("-", local.suffix)}"
+    name              = "osdisk-${local.suffix}"
     caching           = "ReadWrite"
     create_option     = "FromImage"
     managed_disk_type = "Standard_LRS"
   }
 
   os_profile {
-    computer_name  = "${module.naming.virtual_machine.slug}-build-agent-${join("-", local.suffix)}"
+    computer_name  = "${module.naming.virtual_machine.slug}-build-agent-${local.suffix}"
     admin_username = var.build_agent_admin_username
     admin_password = var.build_agent_admin_password
   }
@@ -181,7 +179,7 @@ tags = {
 ###########################################
 
 resource "azurerm_container_registry" "devcontainer_container_registry" {
-  name                = "${module.naming.container_registry.slug}${join("", local.suffix)}"
+  name                = "${module.naming.container_registry.slug}${local.suffix}"
   resource_group_name = azurerm_resource_group.backend.name
   location            = azurerm_resource_group.backend.location
   sku                 = "Basic"
