@@ -23,10 +23,11 @@ module "naming" {
 ///////////////////////////////////
 
 module "virtual_network" {
-  source                              = "./submodules/virtual_networking"
-  virtual_network_name                = var.shared_services_virtual_network_name
-  virtual_network_resource_group_name = var.shared_services_virtual_network_resource_group_name
-  suffix                              = local.suffix
+  source                                  = "./submodules/virtual_networking"
+  virtual_network_name                    = var.shared_services_virtual_network_name
+  virtual_network_resource_group_location = var.resource_group_location
+  virtual_network_resource_group_name     = var.shared_services_virtual_network_resource_group_name
+  suffix                                  = local.suffix
   #firewall_public_ip_sku      = var.firewall_public_ip_sku
 }
 
