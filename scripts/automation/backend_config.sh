@@ -49,24 +49,6 @@ function check_backend_config_exists_in_azure {
 }
 
 #######################################
-# Removing existing backend state file
-# Globals:
-#   TF_VAR_suffix
-# Arguments:
-#   There terraform state file key
-#######################################
-function remove_existing_backend_state_file {
-    if [ -z "$1" ]; then echo "$0: Argument 1 missing"; exit 1; fi
-
-    RG_NAME=rg-dev-ss-${TF_VAR_suffix}
-    SA_NAME=sadevss${TF_VAR_suffix}
-    CT_NAME="terraform-tfstate"
-    SA_KEY=$(az storage account keys list --resource-group $RG_NAME --account-name $SA_NAME --query "[0].value")
-    az storage account keys list --resource-group $RG_NAME --account-name $SA_NAME --query "[0].value" > /dev/null 2>&1
-    az storage blob delete --account-name $SA_NAME --account-key $SA_KEY --container-name $CT_NAME --name "$1"
-}
-
-#######################################
 # Returns success code if backend exists
 # Globals:
 #   TF_VAR_suffix
@@ -76,6 +58,10 @@ function remove_existing_backend_state_file {
 #######################################
 function create_backend_config {
     if [ -z "$1" ]; then echo "$0: Argument 1 missing"; exit 1; fi
+    if [ -z "$2" ]; then echo "$0: Argument 2 missing"; exit 1; fi
+
+    # Create the azurerm terraform config file
+    ensure_terraform_azure_backend_config_file "$2"
 
     # Output a terraform backend config file
     RG_NAME=rg-dev-ss-${TF_VAR_suffix}
