@@ -6,6 +6,9 @@ $DIR/terraform-checkvars-cd.sh
 # Source lib
 . "$DIR/backend_config.sh"
 
+# Azure login
+az_login
+
 # Create a terraform backend configuration file to store the shared services state
 create_backend_config "terraform.tfstate" > backend.config
 
